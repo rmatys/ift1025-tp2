@@ -39,7 +39,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         Label label = new Label("Hello, JavaFX!");
         stage.setScene(new Scene(label, 300, 200));
         stage.show();
