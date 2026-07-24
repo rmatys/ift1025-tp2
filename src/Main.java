@@ -17,12 +17,16 @@ public class Main {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     private static final Scanner scanner = new Scanner(System.in);
     private static final AutoEcole autoEcole = new AutoEcole();
+    private static final boolean testing = false;
 
     /**
      * Point d'entrée de l'application
      */
     void main() {
-        // test();
+        if (testing) {
+            test();
+            return;
+        }
 
         autoEcole.chargerEleves();
         autoEcole.chargerActivites();
@@ -81,7 +85,7 @@ public class Main {
 
         System.out.println("\n--- Test 2 : Ajout voiture ---");
         String plaque = "ABC123";
-        Voiture v = new Voiture(plaque, "Toyota", 2020, 25000, 15000, StatutVoiture.D, 45000, new ArrayList<>());
+        Voiture v = new Voiture(plaque, "Toyota", 2020, 25000, 15000, StatutVoiture.D, 45000);
         testAE.ajouterVoiture(v);
         System.out.println(testAE.rechercherVoiture(plaque) != null
                 ? "OK: voiture ajoutée"

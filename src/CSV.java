@@ -155,7 +155,8 @@ public class CSV {
         ArrayList<Paiement> paiements = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "paiements" + YEAR + ".csv"))) {
-            String ligne = br.readLine();
+            String ligne;
+            br.readLine();
 
             while ((ligne = br.readLine()) != null) {
                 String[] t = ligne.split(",", -1);
