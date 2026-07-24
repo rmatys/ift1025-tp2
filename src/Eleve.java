@@ -94,8 +94,7 @@ public class Eleve {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Eleve)) return false;
-        Eleve eleve = (Eleve) o;
+        if (!(o instanceof Eleve eleve)) return false;
         return Objects.equals(this.numSAAQ, eleve.numSAAQ);
     }
 

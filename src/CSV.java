@@ -404,7 +404,7 @@ public class CSV {
     /**
      * Cherche un élève dans une liste par son numéro SAAQ
      * @param eleves la liste des élèves
-     * @param num le numéro SAAQ à rechercher
+     * @param numSAAQ le numéro SAAQ à rechercher
      * @return l'élève trouvé ou null s'il n'est pas trouvé
      */
     private static Eleve chercherEleve(ArrayList<Eleve> eleves, long numSAAQ) {

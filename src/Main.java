@@ -34,30 +34,30 @@ public class Main {
 
     /**
      * Tests internes pour l'auto-école
-     *
+     * <p>
      * Résultats:
      * ============================================
      *               TESTS INTERNES
      * ============================================
-     *
+     * <p>
      * --- Test 1 : Ajout élève ---
      * OK: élève ajouté
-     *
+     * <p>
      * --- Test 2 : Ajout voiture ---
      * OK: voiture ajoutée
-     *
+     * <p>
      * --- Test 3 : Ajout activité ---
      * OK: activité ajoutée
-     *
+     * <p>
      * --- Test 4 : Conflit horaire ---
      * OK: conflit détecté
-     *
+     * <p>
      * --- Test 5 : Ajout dépense voiture ---
      * OK: dépense ajoutée
-     *
+     * <p>
      * --- Test 6 : Ajout paiement ---
      * OK: paiement ajouté
-     *
+     * <p>
      * ============================================
      * Tests terminés.
      * ============================================
@@ -1521,7 +1521,7 @@ public class Main {
 
     /**
      * Pour améliorer la lisibilité de la méthode ajoutPaiement()
-     * @param activite
+     * @param activite Activtie
      */
     private void creationPaiement(Activite activite) {
         int bonneLongueur = 3;

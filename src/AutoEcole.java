@@ -29,7 +29,7 @@ public class AutoEcole {
 
     /**
      * Ajoute un élève à la liste des élèves de l'auto-école
-     * @param e l'élève à ajouter
+     * @param eleve l'élève à ajouter
      */
     public void ajouterEleve(Eleve eleve) {
         eleves.add(eleve);
@@ -38,7 +38,7 @@ public class AutoEcole {
 
     /**
      * Supprime un élève de la liste des élèves de l'auto-école en fonction de son numéro SAAQ
-     * @param numSAAQ
+     * @param numSAAQ numero Saaq de l'eleve
      */
     public void supprimerEleve(long numSAAQ) {
         eleves.removeIf(eleve -> eleve.getNumSAAQ() == numSAAQ);
@@ -47,7 +47,7 @@ public class AutoEcole {
 
     /**
      * Recherche un élève dans la liste des élèves de l'auto-école en fonction de son numéro SAAQ
-     * @param numSAAQ
+     * @param numSAAQ numero Saaq de l'eleve
      * @return l'élève correspondant au numéro SAAQ, ou null si aucun élève n'est trouvé
      */
     public Eleve rechercherEleve(long numSAAQ) {
@@ -64,7 +64,7 @@ public class AutoEcole {
 
     /**
      * Ajoute une activité à la liste des activités de l'auto-école
-     * @param a l'activité à ajouter
+     * @param activite l'activité à ajouter
      */
     public void ajouterActivite(Activite activite) {
         activites.add(activite);
