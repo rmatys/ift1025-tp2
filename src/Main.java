@@ -7,13 +7,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe principale de l'application de gestion d'une auto-école
  */
 public class Main {
-    Scanner scanner = new Scanner(System.in);
-    AutoEcole autoEcole = new AutoEcole();
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final AutoEcole autoEcole = new AutoEcole();
 
     /**
      * Point d'entrée de l'application
@@ -1389,7 +1392,13 @@ public class Main {
      */
     public void creationFacture(Paiement paiement) {
         File dir = new File(CSV.getDir("facturation"));
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean succes = dir.mkdirs();
+            if (!succes) {
+                System.err.println("Impossible de créer un folder dans: " + dir);
+            }
+        }
+
         String filePath = dir + "//" + paiement.getId() + "_" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".txt";
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
@@ -1436,7 +1445,7 @@ public class Main {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 

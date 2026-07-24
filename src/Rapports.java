@@ -7,11 +7,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Classe représentant les rapports générés par l'auto-école.
  */
 public class Rapports {
+    private static final Logger logger = Logger.getLogger(Rapports.class.getName());
 
     /**
      * Génère un rapport des élèves
@@ -29,7 +32,12 @@ public class Rapports {
         }
 
         File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean succes = dir.mkdirs();
+            if (!succes) {
+                System.err.println("Impossible de créer un folder dans: " + dir);
+            }
+        }
         File f = new File(dir, "rapportEleves" + CSV.YEAR + ".txt");
         try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
             pw.println("================================================");
@@ -87,7 +95,7 @@ public class Rapports {
             System.out.println("Rapport sur les élèves sauvegarder dans .../rapport/");
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", ex);
         }
     }
 
@@ -98,7 +106,13 @@ public class Rapports {
      */
     public static void genererRapportRevenus(ArrayList<Activite> activites, ArrayList<Paiement> paiements) {
         File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean succes = dir.mkdirs();
+            if (!succes) {
+                System.err.println("Impossible de créer un folder dans: " + dir);
+            }
+        }
+
         File f = new File(dir, "rapportRevenus" + CSV.YEAR + ".txt");
 
         int nombreLecons = 0;
@@ -194,7 +208,7 @@ public class Rapports {
             System.out.println("Rapport de revenus sauvegarder dans .../rapport/");
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", ex);
         }
     }
 
@@ -204,7 +218,13 @@ public class Rapports {
      */
     public static void genererRapportDepensesVoiture(ArrayList<DepenseVoiture> depensesVoiture) {
         File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean succes = dir.mkdirs();
+            if (!succes) {
+                System.err.println("Impossible de créer un folder dans: " + dir);
+            }
+        }
+
         File f = new File(dir, "rapportDepensesVoiture" + CSV.YEAR + ".txt");
 
         double totalR = 0;
@@ -272,7 +292,7 @@ public class Rapports {
             System.out.println("Rapport des dépenses de la voiture sauvegarder dans .../rapport/");
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", ex);
         }
     }
 
@@ -282,7 +302,13 @@ public class Rapports {
      */
     public static void genererRapportAutresDepenses(ArrayList<AutreDepense> autresDepenses) {
         File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean succes = dir.mkdirs();
+            if (!succes) {
+                System.err.println("Impossible de créer un folder dans: " + dir);
+            }
+        }
+
         File f = new File(dir, "rapportAutresDepenses" + CSV.YEAR + ".txt");
 
         double total = 0;
@@ -342,7 +368,7 @@ public class Rapports {
             System.out.println("Rapport des autres dépenses sauvegarder dans .../rapport/");
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", ex);
         }
     }
 }

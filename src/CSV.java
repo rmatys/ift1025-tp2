@@ -5,11 +5,14 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe utilitaire pour la lecture et l'écriture de fichiers CSV
  */
 public class CSV {
+    private static final Logger logger = Logger.getLogger(CSV.class.getName());
     public static final int YEAR = LocalDate.now().getYear();
 
     /**
@@ -21,7 +24,8 @@ public class CSV {
         ArrayList<Eleve> eleves = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "eleves" + YEAR + ".csv"))) {
-            String ligne = br.readLine();
+            String ligne;
+            br.readLine();
 
             while ((ligne = br.readLine()) != null) {
                 String[] infosEleve = ligne.split(",", -1);
@@ -41,7 +45,7 @@ public class CSV {
                 eleves.add(new Eleve(numSaaq, nom, prenom, adresse, tel, dateDebut, dateFin));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return eleves;
@@ -67,7 +71,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
@@ -81,7 +85,8 @@ public class CSV {
         ArrayList<Activite> activites = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "activites" + YEAR + ".csv"))) {
-            String ligne = br.readLine();
+            String ligne;
+            br.readLine();
 
             while ((ligne = br.readLine()) != null) {
                 String[] t = ligne.split(",", -1);
@@ -107,7 +112,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return activites;
@@ -135,7 +140,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
@@ -186,7 +191,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return paiements;
@@ -214,7 +219,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
@@ -228,7 +233,8 @@ public class CSV {
         ArrayList<Voiture> voitures = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "voitures" + YEAR + ".csv"))) {
-            String ligne = br.readLine();
+            String ligne;
+            br.readLine();
 
             while ((ligne = br.readLine()) != null) {
                 String[] t = ligne.split(",", -1);
@@ -251,7 +257,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return voitures;
@@ -277,7 +283,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
@@ -290,7 +296,8 @@ public class CSV {
         ArrayList<DepenseVoiture> depenses = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "depenses_voiture" + YEAR + ".csv"))) {
-            String ligne = br.readLine();
+            String ligne;
+            br.readLine();
 
             while ((ligne = br.readLine()) != null) {
                 String[] t = ligne.split(",", -1);
@@ -312,7 +319,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return depenses;
@@ -338,7 +345,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
@@ -351,7 +358,8 @@ public class CSV {
         ArrayList<AutreDepense> depenses = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(getDir("data") + "autres_depenses" + YEAR + ".csv"))) {
-            String ligne = br.readLine(); // skip header
+            String ligne;
+            br.readLine(); // skip header
 
             while ((ligne = br.readLine()) != null) {
                 String[] t = ligne.split(",", -1);
@@ -372,7 +380,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
 
         return depenses;
@@ -397,7 +405,7 @@ public class CSV {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Une erreur est survenue", e);
         }
     }
 
