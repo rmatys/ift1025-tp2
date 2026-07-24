@@ -1,0 +1,30 @@
+================================================
+       AUTO-ÉCOLE - RAPPORT DES ÉLÈVES
+       Année 2026
+================================================
+Date de génération : 19-07-2026
+
+------------------------------------------------
+ÉLÈVES ACTIFS (en cours de formation)
+------------------------------------------------
+NumSAAQ      Nom            Prénom       Inscription
+123456789    Dupont         Marie        2026-07-18
+1234         A              B            2026-07-19
+
+Total élèves actifs : 2
+
+------------------------------------------------
+ÉLÈVES AYANT COMPLÉTÉ LEUR FORMATION
+------------------------------------------------
+NumSAAQ      Nom            Prénom       Inscription    Fin de service
+6789         John           Smith        2026-01-01     2026-07-19
+
+Total élèves complétés : 1
+
+------------------------------------------------
+RÉSUMÉ
+------------------------------------------------
+Nombre total d'élèves (année 2026) : 3
+Élèves actifs                      : 2
+Élèves ayant terminé               : 1
+================================================

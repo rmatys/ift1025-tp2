@@ -1,0 +1,34 @@
+================================================
+       AUTO-ÉCOLE - RAPPORT DE REVENUS
+       Année 2026
+================================================
+Date de génération : 19-07-2026
+
+------------------------------------------------
+DÉTAILS DES PAIEMENTS
+------------------------------------------------
+Numéro de paiement      Date           Numéro SAAQ       Montant     MontantRestant     Méthode de paiement      Statut de paiement
+F-2026-00000            2026-04-12     123456789         75,00 $     75,00 $            Espèces                  Payé
+F-2026-00001            2026-07-19     1234              150,00 $    0,00 $             Carte                    Payé
+F-2026-00002            2026-07-10     1234              90,00 $     90,00 $            Virement                 Impayé
+F-2026-00003            2026-07-19     1234              93,75 $     60,00 $            Carte                    Partiellement payé
+
+------------------------------------------------
+RÉSUMÉ DES LEÇONS
+------------------------------------------------
+Nombre total de leçons        : 3
+Revenu total des leçons       : 90,00 $
+
+------------------------------------------------
+RÉSUMÉ DES EXAMENS
+------------------------------------------------
+Nombre total d'examens        : 3
+Revenu total des examens      : 150,00 $
+
+------------------------------------------------
+TOTAL
+------------------------------------------------
+Revenu brut facturé            : 408,75 $
+Revenu réellement encaissé     : 258,75 $
+Solde à recevoir               : 150,00 $
+================================================
