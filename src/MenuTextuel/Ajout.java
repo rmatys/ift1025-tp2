@@ -99,9 +99,9 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -226,9 +226,9 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -272,9 +272,9 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -321,9 +321,9 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: l'année, le prix ou le kilométrage doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie.");
+                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie.");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie.");
+                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie.");
             }
         }
     }
