@@ -1,3 +1,7 @@
+package MenuTextuel;
+
+import Modele.*;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 

@@ -1,3 +1,5 @@
+package Modele;
+
 /**
  * Classe représentant une activité d'un élève
  */
@@ -19,7 +21,7 @@ public class Activite {
      * @param statutActivite le statut de l'activité
      */
     public Activite(int idActivite, PlageHoraire horaire, Eleve eleve, String plaqueVoiture,
-                    TypeActivite typeActivite,  StatutActivite statutActivite) {
+                    TypeActivite typeActivite, StatutActivite statutActivite) {
         this.idActivite = idActivite;
         this.horaire = horaire;
         this.eleve = eleve;
@@ -36,11 +38,11 @@ public class Activite {
         double nbrHeures = horaire.getNombreHeure();
 
         return switch (typeActivite) {
-            case LPA, LPZ, LPS -> ((!plaqueVoiture.isBlank()) ? 75.0 : 50.0) * nbrHeures;
-            case LT -> 45.0 * nbrHeures;
-            case ET -> 40.0;
-            case EP -> 150.0;
-            case EPL -> 85.0;
+            case TypeActivite.LPA, TypeActivite.LPZ, TypeActivite.LPS -> ((!plaqueVoiture.isBlank()) ? 75.0 : 50.0) * nbrHeures;
+            case TypeActivite.LT -> 45.0 * nbrHeures;
+            case TypeActivite.ET -> 40.0;
+            case TypeActivite.EP -> 150.0;
+            case TypeActivite.EPL -> 85.0;
         };
     }
 

@@ -1,3 +1,7 @@
+package Controleur;
+
+import MenuTextuel.Gestion;
+import Modele.AutoEcole;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -12,7 +16,7 @@ public class Main extends Application {
     private static final Scanner scanner = new Scanner(System.in);
     private static final AutoEcole autoEcole = new AutoEcole();
     private static final boolean testing = false;
-    private static final boolean menuTextuel = false;
+    private static final boolean menuTextuel = true;
 
     /**
      * Point d'entrée de l'application

@@ -1,43 +1,40 @@
+package Modele;
+
 import java.time.LocalDate;
 
 /**
- * Classe représentant une dépense liée à une voiture de l'auto-école
+ * Classe représentant une autre dépense de l'auto-école
  */
-public class DepenseVoiture {
+public class AutreDepense {
     private final int idDepense;
-    private final String plaque;
     private final LocalDate date;
-    private final TypeDepenseVoiture typeDepenseVoiture;
+    private final TypeAutreDepense typeAutreDepense;
     private final String description;
     private final double montant;
 
     /**
-     * Constructeur de la classe DepenseVoiture
+     * Constructeur de la classe AutreDepense
      * @param idDepense l'identifiant unique de la dépense
-     * @param plaque la plaque d'immatriculation de la voiture
      * @param date la date de la dépense
-     * @param typeDepenseVoiture le type de la dépense
+     * @param typeAutreDepense le type de la dépense
      * @param description la description de la dépense
      * @param montant le montant de la dépense
      */
-    public DepenseVoiture(int idDepense, String plaque, LocalDate date,
-                          TypeDepenseVoiture typeDepenseVoiture, String description,
-                          double montant) {
+    public AutreDepense(int idDepense, LocalDate date, TypeAutreDepense typeAutreDepense,
+                        String description, double montant) {
         this.idDepense = idDepense;
-        this.plaque = plaque;
         this.date = date;
-        this.typeDepenseVoiture = typeDepenseVoiture;
+        this.typeAutreDepense = typeAutreDepense;
         this.description = description.replace(',', '.');
         this.montant = montant;
     }
 
     /**
-     * Getters pour les attributs de la classe DepenseVoiture
+     * Getters pour les attributs de la classe AutreDepense
      */
     public int getId() { return idDepense; }
-    public String getPlaque() { return plaque; }
     public LocalDate getDate() { return date; }
-    public TypeDepenseVoiture getCategorie() { return typeDepenseVoiture; }
+    public TypeAutreDepense getCategorie() { return typeAutreDepense; }
     public String getDescription() { return description; }
     public double getMontant() { return montant; }
 
@@ -48,9 +45,8 @@ public class DepenseVoiture {
     @Override
     public String toString() {
         return "AutreDepense{id=" + idDepense +
-                ", plaque=" + plaque +
                 ", date=" + date +
-                ", type=" + typeDepenseVoiture.getLibelle() +
+                ", type=" + typeAutreDepense.getLibelle() +
                 ", description=" + description +
                 ", montant=" + montant +
                 "}";

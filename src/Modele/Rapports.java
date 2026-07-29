@@ -1,3 +1,5 @@
+package Modele;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -140,16 +142,16 @@ public class Rapports {
             TypeActivite typeActivite = activite.getType();
             if (typeActivite == null) continue;
             switch (typeActivite) {
-                case LPA:
-                case LPZ:
-                case LPS:
-                case LT:
+                case TypeActivite.LPA:
+                case TypeActivite.LPZ:
+                case TypeActivite.LPS:
+                case TypeActivite.LT:
                     nombreLecons++;
                     revenuLecons = activite.getMontant();
                     break;
-                case ET:
-                case EP:
-                case EPL:
+                case TypeActivite.ET:
+                case TypeActivite.EP:
+                case TypeActivite.EPL:
                     nombreExamens++;
                     revenuExamens = activite.getMontant();
                     break;
@@ -238,13 +240,13 @@ public class Rapports {
 
             total += d.getMontant();
             switch (categorie) {
-                case R:
+                case TypeDepenseVoiture.R:
                     totalR += d.getMontant();
                     break;
-                case E:
+                case TypeDepenseVoiture.E:
                     totalE += d.getMontant();
                     break;
-                case C:
+                case TypeDepenseVoiture.C:
                     totalC += d.getMontant();
                     break;
                 default:

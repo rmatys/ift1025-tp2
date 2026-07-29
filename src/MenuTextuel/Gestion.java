@@ -1,3 +1,7 @@
+package MenuTextuel;
+
+import Modele.*;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 

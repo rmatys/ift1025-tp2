@@ -1,3 +1,5 @@
+package Modele;
+
 /**
  * Enumération représentant le statut d'un paiement.
  */
