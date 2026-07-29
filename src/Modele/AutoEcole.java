@@ -274,6 +274,15 @@ public class AutoEcole {
     }
 
     /**
+     * Supprime une voiture de la liste des voitures de l'auto-école en fonction de sa plaque
+     * @param plaque la plaque de la voiture à supprimer
+     */
+    public void supprimerVoiture(String plaque) {
+        voitures.removeIf(voiture -> voiture.getPlaque().equals(plaque));
+        sauvegarderVoitures();
+    }
+
+    /**
      * Change l'état d'une voiture et sauvegarde
      * @param plaque la plaque de la voiture à modifier
      * @param nouvelEtat le nouvel état de la voiture
@@ -313,6 +322,29 @@ public class AutoEcole {
         ArrayList<DepenseVoiture> depenses = trouverDepensesVoitureSelonPlaque(plaque);
         Voiture voiture = new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, depenses);
         ajouterVoiture(voiture);
+        return voiture;
+    }
+
+    /**
+     * Valide puis remplace les informations d'une voiture existante de l'auto-école
+     * @param plaque la plaque de la voiture à modifier
+     * @throws OperationInvalideException si le prix ou l'un des kilométrages est négatif, ou si aucune voiture
+     *         ne correspond à la plaque donnée
+     */
+    public Voiture modifierVoiture(String plaque, String marque, int annee, double prix, int kmAchat,
+                                    StatutVoiture etat, int km) throws OperationInvalideException {
+        if (prix < 0 || kmAchat < 0 || km < 0) {
+            throw new OperationInvalideException("le prix et le kilométrage ne peuvent pas être négatifs");
+        }
+
+        int index = voitures.indexOf(rechercherVoiture(plaque));
+        if (index == -1) {
+            throw new OperationInvalideException("aucune voiture trouvée avec la plaque " + plaque);
+        }
+
+        Voiture voiture = new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, voitures.get(index).getDepensesVoiture());
+        voitures.set(index, voiture);
+        sauvegarderVoitures();
         return voiture;
     }
 
