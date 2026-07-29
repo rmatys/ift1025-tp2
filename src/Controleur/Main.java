@@ -1,22 +1,35 @@
 package Controleur;
-
-import MenuTextuel.Gestion;
-import Modele.AutoEcole;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
-
-import java.util.Scanner;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import Modele.AutoEcole;
+import Vue.MenuPrincipal;
 
 /**
  * Classe principale de l'application de gestion d'une auto-école
  */
 public class Main extends Application {
-    private static final Scanner scanner = new Scanner(System.in);
     private static final AutoEcole autoEcole = new AutoEcole();
+    
     private static final boolean testing = false;
-    private static final boolean menuTextuel = true;
+
+    /**
+     * Lance l'application graphique
+     */
+    @Override
+    public void start(Stage stage) {
+        chargerDonnees();
+
+        BorderPane racine = new BorderPane();
+        racine.setCenter(new MenuPrincipal(autoEcole, racine));
+
+        stage.setScene(new Scene(racine, 1000, 700));
+        stage.setTitle("Gestion Auto-École");
+        stage.show();
+
+        stage.setOnCloseRequest(e -> sauvegarde());
+    }
 
     /**
      * Point d'entrée de l'application
@@ -27,26 +40,18 @@ public class Main extends Application {
             return;
         }
 
+        launch(args);
+    }
+
+    /**
+     * Charge les données de l'auto-école depuis les fichiers CSV
+     */
+    public static void chargerDonnees() {
         autoEcole.chargerEleves();
         autoEcole.chargerActivites();
         autoEcole.chargerPaiements();
         autoEcole.chargerDepenses();
         autoEcole.chargerVoitures();
-
-        if (menuTextuel) {
-            Gestion.gestionAutoEcole(scanner, autoEcole);
-        } else {
-            launch(args);
-        }
-
-        sauvegarde();
-    }
-
-    @Override
-    public void start(Stage stage) {
-        Label label = new Label("Hello, JavaFX!");
-        stage.setScene(new Scene(label, 300, 200));
-        stage.show();
     }
 
     /**
@@ -59,8 +64,5 @@ public class Main extends Application {
         autoEcole.sauvegarderDepensesVoiture();
         autoEcole.sauvegarderAutresDepenses();
         autoEcole.sauvegarderVoitures();
-        System.out.println("Sauvegarde terminée");
     }
-
-
 }

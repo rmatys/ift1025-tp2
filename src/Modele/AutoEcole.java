@@ -114,6 +114,19 @@ public class AutoEcole {
     }
 
     /**
+     * Retourne les activités associées à un élève
+     * @param eleve l'élève dont on cherche les activités
+     * @return la liste des activités de l'élève
+     */
+    public ArrayList<Activite> getActivitesEleve(Eleve eleve) {
+        ArrayList<Activite> resultat = new ArrayList<>();
+        for (Activite activite : activites) {
+            if (activite.getEleve().equals(eleve)) resultat.add(activite);
+        }
+        return resultat;
+    }
+
+    /**
      * Retourne le prochain identifiant disponible pour une nouvelle activité
      * @return le prochain identifiant disponible pour une nouvelle activité
      */
@@ -123,6 +136,39 @@ public class AutoEcole {
             max = Math.max(activite.getId(), max);
         }
         return max + 1;
+    }
+
+    /**
+     * Valide puis crée une nouvelle activité pour un élève existant
+     * @throws OperationInvalideException si l'élève est introuvable, si l'horaire est en conflit
+     *         avec une autre activité, ou si la voiture demandée n'est pas disponible
+     */
+    public Activite creerActivite(PlageHoraire horaire, long numSAAQ, String plaque,
+                                   TypeActivite type, StatutActivite statut) throws OperationInvalideException {
+        Eleve eleve = rechercherEleve(numSAAQ);
+        if (eleve == null) {
+            throw new OperationInvalideException("aucun élève trouvé avec le NumSAAQ " + numSAAQ);
+        }
+
+        ArrayList<PlageHoraire> horaires = new ArrayList<>();
+        for (Activite activite : activites) horaires.add(activite.getPlageHoraire());
+        if (horaire.estEnConflitHoraire(horaires)) {
+            throw new OperationInvalideException("conflit d'horaire à " + horaire);
+        }
+
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture != null && !voiture.estDisponible()) {
+            throw new OperationInvalideException("la voiture de l'école n'est pas disponible");
+        }
+
+        if (statut.equals(StatutActivite.C)) {
+            eleve.setDateFin(LocalDate.now());
+            sauvegarderEleves();
+        }
+
+        Activite activite = new Activite(prochainIdActivite(), horaire, eleve, plaque, type, statut);
+        ajouterActivite(activite);
+        return activite;
     }
 
 
@@ -135,6 +181,56 @@ public class AutoEcole {
     public void ajouterPaiement(Paiement paiement) {
         paiements.add(paiement);
         sauvegarderPaiements();
+    }
+
+    /**
+     * Change le statut d'un paiement, valide le montant restant si applicable, et sauvegarde
+     * @param id l'identifiant du paiement à modifier
+     * @param nouvelEtat le nouveau statut du paiement
+     * @param montantRestant le nouveau montant restant, utilisé seulement si nouvelEtat est PP
+     * @throws OperationInvalideException si le montant restant demandé est supérieur à l'ancien
+     */
+    public void changerEtatPaiement(String id, StatutPaiement nouvelEtat, double montantRestant) throws OperationInvalideException {
+        Paiement paiement = rechercherPaiement(id);
+        if (paiement == null) return;
+
+        if (nouvelEtat.equals(StatutPaiement.P)) {
+            paiement.setMontantRestant(0);
+        } else if (nouvelEtat.equals(StatutPaiement.PP)) {
+            if (montantRestant > paiement.getMontantRestant()) {
+                throw new OperationInvalideException("le montant restant doit être plus petit que ce qu'il y avait avant");
+            }
+            paiement.setMontantRestant(montantRestant);
+        }
+
+        paiement.setDate(LocalDate.now());
+        paiement.setEtat(nouvelEtat);
+        sauvegarderPaiements();
+    }
+
+    /**
+     * Retourne les paiements associés à un élève
+     * @param eleve l'élève dont on cherche les paiements
+     * @return la liste des paiements de l'élève
+     */
+    public ArrayList<Paiement> getPaiementsEleve(Eleve eleve) {
+        ArrayList<Paiement> resultat = new ArrayList<>();
+        for (Paiement paiement : paiements) {
+            if (paiement.getEleve().equals(eleve)) resultat.add(paiement);
+        }
+        return resultat;
+    }
+
+    /**
+     * Retourne les paiements impayés
+     * @return la liste des paiements dont le statut est impayé
+     */
+    public ArrayList<Paiement> getPaiementsImpayes() {
+        ArrayList<Paiement> resultat = new ArrayList<>();
+        for (Paiement paiement : paiements) {
+            if (paiement.getStatutPaiement().equals(StatutPaiement.I)) resultat.add(paiement);
+        }
+        return resultat;
     }
 
     /**
@@ -178,6 +274,28 @@ public class AutoEcole {
     }
 
     /**
+     * Supprime une voiture de la liste des voitures de l'auto-école en fonction de sa plaque
+     * @param plaque la plaque de la voiture à supprimer
+     */
+    public void supprimerVoiture(String plaque) {
+        voitures.removeIf(voiture -> voiture.getPlaque().equals(plaque));
+        sauvegarderVoitures();
+    }
+
+    /**
+     * Change l'état d'une voiture et sauvegarde
+     * @param plaque la plaque de la voiture à modifier
+     * @param nouvelEtat le nouvel état de la voiture
+     */
+    public void changerEtatVoiture(String plaque, StatutVoiture nouvelEtat) {
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture == null) return;
+
+        voiture.setEtat(nouvelEtat);
+        sauvegarderVoitures();
+    }
+
+    /**
      * Recherche une voiture dans la liste des voitures de l'auto-école en fonction de sa plaque
      * @param plaque la plaque de la voiture à rechercher
      * @return la voiture correspondant à la plaque, ou null si aucune voiture n'est trouvée
@@ -189,6 +307,45 @@ public class AutoEcole {
             }
         }
         return null;
+    }
+
+    /**
+     * Valide puis crée une nouvelle voiture pour l'auto-école
+     * @throws OperationInvalideException si le prix ou l'un des kilométrages est négatif
+     */
+    public Voiture creerVoiture(String marque, String plaque, int annee, double prix, int kmAchat,
+                                 StatutVoiture etat, int km) throws OperationInvalideException {
+        if (prix < 0 || kmAchat < 0 || km < 0) {
+            throw new OperationInvalideException("le prix et le kilométrage ne peuvent pas être négatifs");
+        }
+
+        ArrayList<DepenseVoiture> depenses = trouverDepensesVoitureSelonPlaque(plaque);
+        Voiture voiture = new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, depenses);
+        ajouterVoiture(voiture);
+        return voiture;
+    }
+
+    /**
+     * Valide puis remplace les informations d'une voiture existante de l'auto-école
+     * @param plaque la plaque de la voiture à modifier
+     * @throws OperationInvalideException si le prix ou l'un des kilométrages est négatif, ou si aucune voiture
+     *         ne correspond à la plaque donnée
+     */
+    public Voiture modifierVoiture(String plaque, String marque, int annee, double prix, int kmAchat,
+                                    StatutVoiture etat, int km) throws OperationInvalideException {
+        if (prix < 0 || kmAchat < 0 || km < 0) {
+            throw new OperationInvalideException("le prix et le kilométrage ne peuvent pas être négatifs");
+        }
+
+        int index = voitures.indexOf(rechercherVoiture(plaque));
+        if (index == -1) {
+            throw new OperationInvalideException("aucune voiture trouvée avec la plaque " + plaque);
+        }
+
+        Voiture voiture = new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, voitures.get(index).getDepensesVoiture());
+        voitures.set(index, voiture);
+        sauvegarderVoitures();
+        return voiture;
     }
 
 
@@ -210,6 +367,42 @@ public class AutoEcole {
     public void ajouterAutreDepense(AutreDepense depense) {
         autresDepenses.add(depense);
         sauvegarderAutresDepenses();
+    }
+
+    /**
+     * Valide puis crée une nouvelle dépense pour une voiture de l'auto-école
+     * @throws OperationInvalideException si le montant est négatif
+     */
+    public DepenseVoiture creerDepenseVoiture(String plaque, LocalDate date, TypeDepenseVoiture categorie,
+                                               String description, double montant) throws OperationInvalideException {
+        if (montant < 0) {
+            throw new OperationInvalideException("le montant ne peut pas être négatif");
+        }
+
+        DepenseVoiture depense = new DepenseVoiture(prochainIdDepenseVoiture(), plaque, date, categorie, description, montant);
+        ajouterDepenseVoiture(depense);
+
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture != null) {
+            voiture.updateDepenses(depensesVoiture);
+        }
+
+        return depense;
+    }
+
+    /**
+     * Valide puis crée une nouvelle autre dépense de l'auto-école
+     * @throws OperationInvalideException si le montant est négatif
+     */
+    public AutreDepense creerAutreDepense(LocalDate date, TypeAutreDepense categorie,
+                                           String description, double montant) throws OperationInvalideException {
+        if (montant < 0) {
+            throw new OperationInvalideException("le montant ne peut pas être négatif");
+        }
+
+        AutreDepense depense = new AutreDepense(prochainIdAutreDepense(), date, categorie, description, montant);
+        ajouterAutreDepense(depense);
+        return depense;
     }
 
     /**
