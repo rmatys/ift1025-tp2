@@ -1,28 +1,18 @@
+package Controleur;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import Modele.AutoEcole;
 import Vue.MenuPrincipal;
-import Vue.Saisie;
-
-import java.util.Locale;
-import java.util.Scanner;
-
-import Controleur.Gestion;
-import Controleur.Test;
 
 /**
  * Classe principale de l'application de gestion d'une auto-école
  */
 public class Main extends Application {
-    // Locale.US pour que Scanner.nextDouble() accepte le point comme séparateur décimal,
-    // comme dans tous les exemples affichés par l'application (ex: "350.00")
-    private static final Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
     private static final AutoEcole autoEcole = new AutoEcole();
     
     private static final boolean testing = false;
-    private static final boolean textuel = false;
 
     /**
      * Lance l'application graphique
@@ -50,16 +40,7 @@ public class Main extends Application {
             return;
         }
 
-        if (textuel) {
-            chargerDonnees();
-            Gestion.gestionAutoEcole(scanner, autoEcole);
-            sauvegarde();
-
-        } else {
-            System.out.println("Lancement de l'application graphique...");
-            launch(args);
-
-        }
+        launch(args);
     }
 
     /**
@@ -83,6 +64,5 @@ public class Main extends Application {
         autoEcole.sauvegarderDepensesVoiture();
         autoEcole.sauvegarderAutresDepenses();
         autoEcole.sauvegarderVoitures();
-        Saisie.afficherMessage("Sauvegarde terminée");
     }
 }
