@@ -22,7 +22,7 @@ public class Rapports {
      * Génère un rapport des élèves
      * @param eleves la liste des élèves
      */
-    public static void genererRapportEleves(ArrayList<Eleve> eleves) {
+    public static boolean genererRapportEleves(ArrayList<Eleve> eleves) {
         int nbrElevesActif = 0;
         int nbrElevesGradue = 0;
         for (Eleve eleve : eleves) {
@@ -38,6 +38,7 @@ public class Rapports {
             boolean succes = dir.mkdirs();
             if (!succes) {
                 System.err.println("Impossible de créer un folder dans: " + dir);
+                return false;
             }
         }
         File f = new File(dir, "rapportEleves" + CSV.YEAR + ".txt");
@@ -94,11 +95,11 @@ public class Rapports {
             pw.println("Élèves ayant terminé               : " + nbrElevesGradue);
             pw.println("================================================");
 
-            System.out.println("Rapport sur les élèves sauvegarder dans .../rapport/");
-
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Une erreur est survenue", ex);
+            return false;
         }
+        return true;
     }
 
     /**
@@ -106,12 +107,13 @@ public class Rapports {
      * @param activites la liste des activités
      * @param paiements la liste des paiements
      */
-    public static void genererRapportRevenus(ArrayList<Activite> activites, ArrayList<Paiement> paiements) {
+    public static boolean genererRapportRevenus(ArrayList<Activite> activites, ArrayList<Paiement> paiements) {
         File dir = new File(CSV.getDir("rapport"));
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
                 System.err.println("Impossible de créer un folder dans: " + dir);
+                return false;
             }
         }
 
@@ -207,23 +209,25 @@ public class Rapports {
             pw.println("Solde à recevoir               : " + String.format("%.2f", soldeFutur) + " $");
             pw.println("================================================");
 
-            System.out.println("Rapport de revenus sauvegarder dans .../rapport/");
-
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Une erreur est survenue", ex);
+            return false;
         }
+        return true;
     }
 
     /**
      * Génère un rapport des dépenses voiture
      * @param depensesVoiture la liste des dépenses voiture
      */
-    public static void genererRapportDepensesVoiture(ArrayList<DepenseVoiture> depensesVoiture) {
+    public static boolean genererRapportDepensesVoiture(ArrayList<DepenseVoiture> depensesVoiture) {
         File dir = new File(CSV.getDir("rapport"));
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
                 System.err.println("Impossible de créer un folder dans: " + dir);
+                return false;
+            }
             }
         }
 
@@ -291,10 +295,11 @@ public class Rapports {
             pw.println("Total des dépenses véhicule (" + CSV.YEAR + ") : " + String.format("%.2f", total) + " $");
             pw.println("================================================");
 
-            System.out.println("Rapport des dépenses de la voiture sauvegarder dans .../rapport/");
+            return true;
 
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Une erreur est survenue", ex);
+            return false;
         }
     }
 
@@ -302,12 +307,13 @@ public class Rapports {
      * Génère un rapport des autres dépenses
      * @param autresDepenses la liste des autres dépenses
      */
-    public static void genererRapportAutresDepenses(ArrayList<AutreDepense> autresDepenses) {
+    public static boolean genererRapportAutresDepenses(ArrayList<AutreDepense> autresDepenses) {
         File dir = new File(CSV.getDir("rapport"));
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
                 System.err.println("Impossible de créer un folder dans: " + dir);
+                return false;
             }
         }
 
@@ -367,7 +373,7 @@ public class Rapports {
             pw.println("Total des autres dépenses (" + CSV.YEAR + ") : " + String.format("%.2f", total) + " $");
             pw.println("================================================");
 
-            System.out.println("Rapport des autres dépenses sauvegarder dans .../rapport/");
+            return true;
 
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Une erreur est survenue", ex);
