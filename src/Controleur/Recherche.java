@@ -1,6 +1,7 @@
-package MenuTextuel;
+package Controleur;
 
 import Modele.*;
+import Vue.Saisie;
 
 import java.util.Scanner;
 
@@ -10,25 +11,23 @@ public class Recherche {
      */
     public static void rechercheEleve(Scanner scanner, AutoEcole autoEcole) {
         while(true) {
-            System.out.println("Recherche d'un élève par son numéro SAAQ");
-            System.out.print("Numéro SAAQ: ");
+            Saisie.afficherMessage("Recherche d'un élève par son numéro SAAQ");
 
             try {
-                long numSAAQ = scanner.nextLong();
-                scanner.nextLine();
+                long numSAAQ = Saisie.demanderLong(scanner, "Numéro SAAQ: ");
 
                 Eleve eleve = autoEcole.rechercherEleve(numSAAQ);
 
                 if (eleve == null) {
-                    System.out.println("Aucun élève attaché à ce numéro.");
+                    Saisie.afficherMessage("Aucun élève attaché à ce numéro.");
                     return;
                 }
 
-                System.out.println(" - " + eleve);
+                Saisie.afficherMessage(" - " + eleve);
                 break;
 
             } catch (Exception e) {
-                System.out.println("Erreur: il faut un numéro (long). Réessaie");
+                Saisie.afficherMessage("Erreur: il faut un numéro (long). Réessaie");
             }
         }
     }
@@ -38,26 +37,24 @@ public class Recherche {
      */
     public static void rechercheActivite(Scanner scanner, AutoEcole autoEcole) {
         while(true) {
-            System.out.println("Recherche d'une activité par son ID");
-            System.out.print("ID de l'activité: ");
+            Saisie.afficherMessage("Recherche d'une activité par son ID");
 
             try {
-                int id = scanner.nextInt();
-                scanner.nextLine();
+                int id = Saisie.demanderEntier(scanner, "ID de l'activité: ");
 
                 Activite activite = autoEcole.rechercherActivite(id);
 
                 if (activite == null) {
-                    System.out.println("Aucune activité attaché à cet identificateur.");
+                    Saisie.afficherMessage("Aucune activité attaché à cet identificateur.");
                     return;
                 }
 
-                System.out.println(" - " + activite);
+                Saisie.afficherMessage(" - " + activite);
 
                 break;
 
             } catch (Exception e) {
-                System.out.println("Erreur: il faut un numéro (int). Réessaie");
+                Saisie.afficherMessage("Erreur: il faut un numéro (int). Réessaie");
             }
         }
     }
@@ -67,24 +64,23 @@ public class Recherche {
      */
     public static void recherchePaiement(Scanner scanner, AutoEcole autoEcole) {
         while(true) {
-            System.out.println("Recherche d'un paiement par son ID (format \"F-AAAA-XXXXX\")");
-            System.out.print("ID: ");
+            Saisie.afficherMessage("Recherche d'un paiement par son ID (format \"F-AAAA-XXXXX\")");
 
             try {
-                String id = scanner.nextLine();
+                String id = Saisie.demanderLigne(scanner, "ID: ");
 
                 Paiement paiement = autoEcole.rechercherPaiement(id);
 
                 if (paiement == null) {
-                    System.out.println("Aucun paiement attaché à cet identifiant.");
+                    Saisie.afficherMessage("Aucun paiement attaché à cet identifiant.");
                     return;
                 }
 
-                System.out.println(" - " + paiement);
+                Saisie.afficherMessage(" - " + paiement);
                 break;
 
             } catch (Exception e) {
-                System.out.println("Erreur: il faut un identifiant (String format \"F-AAAA-XXXXX\"). Réessaie");
+                Saisie.afficherMessage("Erreur: il faut un identifiant (String format \"F-AAAA-XXXXX\"). Réessaie");
             }
         }
     }
@@ -94,24 +90,23 @@ public class Recherche {
      */
     public static void rechercheVoiture(Scanner scanner, AutoEcole autoEcole) {
         while(true) {
-            System.out.println("Recherche d'une voiture par sa plaque d'immatriculation");
-            System.out.print("Plaque d'immatriculation: ");
+            Saisie.afficherMessage("Recherche d'une voiture par sa plaque d'immatriculation");
 
             try {
-                String plaque = scanner.nextLine();
+                String plaque = Saisie.demanderLigne(scanner, "Plaque d'immatriculation: ");
 
                 Voiture voiture = autoEcole.rechercherVoiture(plaque);
 
                 if (voiture == null) {
-                    System.out.println("Voiture de l'extérieur.");
+                    Saisie.afficherMessage("Voiture de l'extérieur.");
                     return;
                 }
 
-                System.out.println(" - " + voiture);
+                Saisie.afficherMessage(" - " + voiture);
                 break;
 
             } catch (Exception e) {
-                System.out.println("Erreur: il faut un numéro (long). Réessaie");
+                Saisie.afficherMessage("Erreur: il faut un numéro (long). Réessaie");
             }
         }
     }

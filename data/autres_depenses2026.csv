@@ -1,3 +1,14 @@
 ID_Depense,Date,Categorie,Description,Montant
-0,25-05-2026,P,Publicité école,350.0
-1,19-06-2026,B,Papier imprimante,30.0
+0,04-03-2026,P,Publicite Facebook,337.31
+1,17-07-2026,P,Publicite journal local,67.7
+2,25-06-2026,P,Affiches promotionnelles,141.59
+3,31-01-2026,B,Papier imprimante,252.15
+4,25-05-2026,B,Fournitures de bureau,324.6
+5,30-03-2026,B,Materiel pedagogique,319.58
+6,19-06-2026,T,Facture cellulaire,227.12
+7,10-05-2026,T,Facture telephone bureau,167.11
+8,04-01-2026,I,Facture internet,269.59
+9,06-05-2026,I,Hebergement site web,344.34
+10,03-04-2026,A,Assurance responsabilite,69.05
+11,28-04-2026,A,Frais comptables,265.17
+12,22-04-2026,A,Formation moniteur,291.7

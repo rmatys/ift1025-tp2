@@ -2,26 +2,37 @@
        AUTO-ÉCOLE - RAPPORT DES DÉPENSES VÉHICULE
        Année 2026
 ================================================
-Date de génération : 19-07-2026
+Date de génération : 28-07-2026
 
 ------------------------------------------------
 DÉTAIL DES DÉPENSES
 ------------------------------------------------
 Date         Catégorie      Description                Montant
-2026-05-25   Publicité      Publicité école            350,00 $
-2026-06-19   Bureau         Papier imprimante          30,00 $
+2026-03-04   Publicité      Publicite Facebook         337,31 $
+2026-07-17   Publicité      Publicite journal local    67,70 $
+2026-06-25   Publicité      Affiches promotionnelles   141,59 $
+2026-01-31   Bureau         Papier imprimante          252,15 $
+2026-05-25   Bureau         Fournitures de bureau      324,60 $
+2026-03-30   Bureau         Materiel pedagogique       319,58 $
+2026-06-19   Téléphone      Facture cellulaire         227,12 $
+2026-05-10   Téléphone      Facture telephone bureau   167,11 $
+2026-01-04   Internet       Facture internet           269,59 $
+2026-05-06   Internet       Hebergement site web       344,34 $
+2026-04-03   Autre          Assurance responsabilite   69,05 $
+2026-04-28   Autre          Frais comptables           265,17 $
+2026-04-22   Autre          Formation moniteur         291,70 $
 
 ------------------------------------------------
 RÉSUMÉ PAR CATÉGORIE
 ------------------------------------------------
-Publicité (P)   : 350,00 $
-Bureau (B)      : 30,00 $
-Téléphone (T)   : 0,00 $
-Internet (I)    : 0,00 $
-Autre (A)       : 0,00 $
+Publicité (P)   : 546,60 $
+Bureau (B)      : 896,33 $
+Téléphone (T)   : 394,23 $
+Internet (I)    : 613,93 $
+Autre (A)       : 625,92 $
 
 ------------------------------------------------
 TOTAL
 ------------------------------------------------
-Total des autres dépenses (2026) : 380,00 $
+Total des autres dépenses (2026) : 3077,01 $
 ================================================

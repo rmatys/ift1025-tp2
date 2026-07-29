@@ -29,15 +29,13 @@ public class Paiement {
     public Paiement(int numeroSequentiel, LocalDate datePaiement, StatutPaiement statutPaiement, Activite activite,
                     MethodePaiement methodePaiement, Eleve eleve) {
         double montant = activite.getMontant();
-        double montantRestant = -1;
+        double montantRestant = 0;
         if (statutPaiement.equals(StatutPaiement.P)) {
             montantRestant = 0.0;
         } else if (statutPaiement.equals(StatutPaiement.PP)) {
             montantRestant = montant;
         } else if (statutPaiement.equals(StatutPaiement.I)) {
             montantRestant = montant;
-        } else {
-            System.err.println("Erreur: Stuatut du paiement manquant, valeur donnée : " + statutPaiement);
         }
 
         this.idPaiement = "F-" + LocalDate.now().getYear() + "-" + String.format("%05d", numeroSequentiel);

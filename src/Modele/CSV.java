@@ -186,7 +186,7 @@ public class CSV {
                 }
 
                 if (activite == null || eleve == null) {
-                    System.err.println("Erreur: chaque paiement devrait avoir une activité et un élève. Skipping ID: " + idPaiement);
+                    logger.log(Level.WARNING, "Erreur: chaque paiement devrait avoir une activité et un élève. Skipping ID: " + idPaiement);
                     continue;
                 }
 

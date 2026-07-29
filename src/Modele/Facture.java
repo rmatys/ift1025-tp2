@@ -1,64 +1,36 @@
-package MenuTextuel;
-
-import Modele.*;
+package Modele;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe responsable de la génération des factures, enregistrées dans des fichiers texte.
+ */
 public class Facture {
     private static final Logger logger = Logger.getLogger(Facture.class.getName());
 
     /**
-     * Génère une facture pour un paiement en recherchant le paiement par son identifiant
-     */
-    public static void genererFacture(Scanner scanner, AutoEcole autoEcole) {
-        while(true) {
-            System.out.println("Générer une facture pour un paiement.");
-            System.out.println("Recherche d'un paiement par son identifiant (format : F-AAAA-XXXXX)");
-            System.out.print("Identifiant de paiement: ");
-
-            try {
-                String id = scanner.nextLine();
-
-                Paiement paiement = autoEcole.rechercherPaiement(id);
-
-                if (paiement == null) {
-                    System.out.println("Aucun paiement attaché à cet identificateur.");
-                    return;
-                }
-
-                creationFacture(paiement);
-                System.out.println("Facture créé pour le paiement " + id);
-
-                break;
-
-            } catch (Exception e) {
-                System.out.println("Erreur: il faut un numéro (long). Réessaie");
-            }
-        }
-    }
-
-    /**
      * Crée une facture pour un paiement et l'enregistre dans un fichier texte
      */
-    public static void creationFacture(Paiement paiement) {
+    public static boolean genererFacture(Paiement paiement) {
         File dir = new File(CSV.getDir("facturation"));
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
-                System.err.println("Impossible de créer un folder dans: " + dir);
+                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
+                return false;
             }
         }
 
-        String filePath = dir + "//" + paiement.getId() + "_" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".txt";
+        File f = new File(dir, paiement.getId() + "_" + LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".txt");
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(filePath))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
             Eleve eleve = paiement.getEleve();
             Activite activite = paiement.getActivite();
 
@@ -100,9 +72,10 @@ public class Facture {
             pw.println("Bonne journée!");
             pw.println("================================================");
 
-
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, "Une erreur est survenue", e);
+            return false;
         }
+        return true;
     }
 }

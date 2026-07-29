@@ -37,7 +37,7 @@ public class Rapports {
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
-                System.err.println("Impossible de créer un folder dans: " + dir);
+                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
                 return false;
             }
         }
@@ -112,7 +112,7 @@ public class Rapports {
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
-                System.err.println("Impossible de créer un folder dans: " + dir);
+                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
                 return false;
             }
         }
@@ -225,7 +225,7 @@ public class Rapports {
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
-                System.err.println("Impossible de créer un folder dans: " + dir);
+                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
                 return false;
             }
         }
@@ -311,7 +311,7 @@ public class Rapports {
         if (!dir.exists()) {
             boolean succes = dir.mkdirs();
             if (!succes) {
-                System.err.println("Impossible de créer un folder dans: " + dir);
+                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
                 return false;
             }
         }

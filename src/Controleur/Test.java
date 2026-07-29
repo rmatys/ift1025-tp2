@@ -2,9 +2,14 @@ package Controleur;
 
 import Modele.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Test {
     /**
@@ -38,6 +43,62 @@ public class Test {
      * ============================================
      */
     public static void test() {
+        // executerTests() sauvegarde en mémoire puis écrase data/*<annee>.csv via AutoEcole.ajouterX().
+        // On restaure les fichiers originaux après coup pour ne pas perdre les données réelles.
+        Map<Path, byte[]> sauvegarde = sauvegarderFichiersData();
+        try {
+            executerTests();
+        } finally {
+            restaurerFichiersData(sauvegarde);
+        }
+    }
+
+    /**
+     * Liste des fichiers CSV que executerTests() écrit via AutoEcole.ajouterX()
+     */
+    private static Path[] fichiersDataUtilisesParTest() {
+        String dir = CSV.getDir("data");
+        String[] noms = {"eleves", "voitures", "activites", "depenses_voiture", "paiements"};
+        Path[] chemins = new Path[noms.length];
+        for (int i = 0; i < noms.length; i++) {
+            chemins[i] = Path.of(dir + noms[i] + CSV.YEAR + ".csv");
+        }
+        return chemins;
+    }
+
+    /**
+     * Lit en mémoire le contenu actuel des fichiers data concernés (null si absent)
+     */
+    private static Map<Path, byte[]> sauvegarderFichiersData() {
+        Map<Path, byte[]> sauvegarde = new LinkedHashMap<>();
+        for (Path chemin : fichiersDataUtilisesParTest()) {
+            try {
+                sauvegarde.put(chemin, Files.exists(chemin) ? Files.readAllBytes(chemin) : null);
+            } catch (IOException e) {
+                throw new RuntimeException("Impossible de sauvegarder " + chemin, e);
+            }
+        }
+        return sauvegarde;
+    }
+
+    /**
+     * Restaure le contenu original des fichiers data (ou supprime ceux qui n'existaient pas avant)
+     */
+    private static void restaurerFichiersData(Map<Path, byte[]> sauvegarde) {
+        for (Map.Entry<Path, byte[]> entree : sauvegarde.entrySet()) {
+            try {
+                if (entree.getValue() == null) {
+                    Files.deleteIfExists(entree.getKey());
+                } else {
+                    Files.write(entree.getKey(), entree.getValue());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Impossible de restaurer " + entree.getKey(), e);
+            }
+        }
+    }
+
+    private static void executerTests() {
         System.out.println("============================================");
         System.out.println("              TESTS INTERNES");
         System.out.println("============================================");

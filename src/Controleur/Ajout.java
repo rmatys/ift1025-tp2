@@ -1,6 +1,7 @@
-package MenuTextuel;
+package Controleur;
 
 import Modele.*;
+import Vue.Saisie;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -15,17 +16,16 @@ public class Ajout {
         int bonneLongueur = 5;
 
         while (true) {
-            System.out.println("Ajout d'un nouvel élève");
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("NumSAAQ,Nom,Prenom,Adresse,Telephone");
-            System.out.println("ex: 123456789,Dupont,Marie,adr1,5145551234");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'un nouvel élève");
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("NumSAAQ,Nom,Prenom,Adresse,Telephone");
+            Saisie.afficherMessage("ex: 123456789,Dupont,Marie,adr1,5145551234");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosEleve = ligne.split(",");
 
             if (infosEleve.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -43,14 +43,14 @@ public class Ajout {
                 LocalDate dateAuj = LocalDate.now();
 
                 autoEcole.ajouterEleve(new Eleve(numSAAQ, nom, prenom, adresse, tel, dateAuj));
-                System.out.println("Élève ajouté dans le système.");
+                Saisie.afficherMessage("Élève ajouté dans le système.");
 
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: le NumSAAQ doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: le NumSAAQ doit être un nombre valide. Réessaie");
             } catch (Exception e) {
-                System.out.println("Erreur: entrée invalide (" + e.getMessage() + "). Réessaie");
+                Saisie.afficherMessage("Erreur: entrée invalide (" + e.getMessage() + "). Réessaie");
             }
         }
     }
@@ -62,17 +62,16 @@ public class Ajout {
         int bonneLongueur = 7;
 
         while (true) {
-            System.out.println("Ajout d'une nouvelle activité");
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("Type,NumSAAQ,Date,Heure,Duree,Statut,Plaque");
-            System.out.println("ex: LPA,123456789,12-04-2026,9:00,90,C,ABC123");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'une nouvelle activité");
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("Type,NumSAAQ,Date,Heure,Duree,Statut,Plaque");
+            Saisie.afficherMessage("ex: LPA,123456789,12-04-2026,9:00,90,C,ABC123");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosActivite = ligne.split(",");
 
             if (infosActivite.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -92,16 +91,16 @@ public class Ajout {
                 PlageHoraire horaire = new PlageHoraire(date, heure, duree);
 
                 autoEcole.creerActivite(horaire, numSAAQ, plaque, type, statut);
-                System.out.println("Activité ajoutée dans le système.");
+                Saisie.afficherMessage("Activité ajoutée dans le système.");
 
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -111,27 +110,25 @@ public class Ajout {
      */
     public static void ajoutPaiement(Scanner scanner, AutoEcole autoEcole) {
         while(true) {
-            System.out.println("Recherche d'une activité par son ID");
-            System.out.print("ID de l'activité: ");
+            Saisie.afficherMessage("Recherche d'une activité par son ID");
 
             try {
-                int id = scanner.nextInt();
-                scanner.nextLine();
+                int id = Saisie.demanderEntier(scanner, "ID de l'activité: ");
 
                 Activite activite = autoEcole.rechercherActivite(id);
 
                 if (activite == null) {
-                    System.out.println("Aucune activité attaché à cet identificateur.");
+                    Saisie.afficherMessage("Aucune activité attaché à cet identificateur.");
                     return;
                 }
 
                 creationPaiement(scanner, autoEcole, activite);
-                System.out.println("Paiement ajouté dans le système pour l'activité ID: " + id);
+                Saisie.afficherMessage("Paiement ajouté dans le système pour l'activité ID: " + id);
 
                 break;
 
             } catch (Exception e) {
-                System.out.println("Erreur: il faut un numéro (int). Réessaie");
+                Saisie.afficherMessage("Erreur: il faut un numéro (int). Réessaie");
             }
         }
     }
@@ -144,18 +141,17 @@ public class Ajout {
         int bonneLongueur = 3;
 
         while (true) {
-            System.out.println("Ajout d'une paiement pour l'activité avec l'ID " + activite.getId());
-            System.out.println(" - " + activite);
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("Date,StatutPaiement,MethodePaiement");
-            System.out.println("ex: 12-04-2026,P,E");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'une paiement pour l'activité avec l'ID " + activite.getId());
+            Saisie.afficherMessage(" - " + activite);
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("Date,StatutPaiement,MethodePaiement");
+            Saisie.afficherMessage("ex: 12-04-2026,P,E");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosPaiement = ligne.split(",");
 
             if (infosPaiement.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -175,9 +171,9 @@ public class Ajout {
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -189,17 +185,16 @@ public class Ajout {
         int bonneLongueur = 5;
 
         while (true) {
-            System.out.println("Ajout d'une nouvelle dépense pour une voiture de l'école");
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("Plaque,Date,Categorie,Description,Montant");
-            System.out.println("ex: ABC123,25-05-2026,R,Remplacement freins,350.00");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'une nouvelle dépense pour une voiture de l'école");
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("Plaque,Date,Categorie,Description,Montant");
+            Saisie.afficherMessage("ex: ABC123,25-05-2026,R,Remplacement freins,350.00");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosDepense = ligne.split(",");
 
             if (infosDepense.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -215,20 +210,20 @@ public class Ajout {
                 double montant = Double.parseDouble(infosDepense[4]);
 
                 autoEcole.creerDepenseVoiture(plaque, date, categorie, description, montant);
-                System.out.println("Dépense ajoutée dans le système");
+                Saisie.afficherMessage("Dépense ajoutée dans le système");
 
                 if (autoEcole.rechercherVoiture(plaque) != null) {
-                    System.out.println("Dépense ajoutée pour la voiture: " + plaque);
+                    Saisie.afficherMessage("Dépense ajoutée pour la voiture: " + plaque);
                 }
 
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -240,17 +235,16 @@ public class Ajout {
         int bonneLongueur = 4;
 
         while (true) {
-            System.out.println("Ajout d'une nouvelle dépense pour une voiture de l'école");
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("Date,Categorie,Description,Montant");
-            System.out.println("ex: 25-05-2026,P,Publicité école,350.00");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'une nouvelle dépense pour une voiture de l'école");
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("Date,Categorie,Description,Montant");
+            Saisie.afficherMessage("ex: 25-05-2026,P,Publicité école,350.00");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosDepense = ligne.split(",");
 
             if (infosDepense.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -265,16 +259,16 @@ public class Ajout {
                 double montant = Double.parseDouble(infosDepense[3]);
 
                 autoEcole.creerAutreDepense(date, categorie, description, montant);
-                System.out.println("Autre dépense ajouté dans le système.");
+                Saisie.afficherMessage("Autre dépense ajouté dans le système.");
 
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
+                Saisie.afficherMessage("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie");
             }
         }
     }
@@ -286,17 +280,16 @@ public class Ajout {
         int bonneLongueur = 7;
 
         while (true) {
-            System.out.println("Ajout d'une nouvelle activité");
-            System.out.println("Donner les informations sous ce format:");
-            System.out.println("Marque,Plaque,Annee,Prix,KmAchat,Etat,Km");
-            System.out.println("ex: Toyota,ABC123,2020,25000.00,15000,D,45230");
-            System.out.print("Votre entrée: ");
-            String ligne = scanner.nextLine();
+            Saisie.afficherMessage("Ajout d'une nouvelle activité");
+            Saisie.afficherMessage("Donner les informations sous ce format:");
+            Saisie.afficherMessage("Marque,Plaque,Annee,Prix,KmAchat,Etat,Km");
+            Saisie.afficherMessage("ex: Toyota,ABC123,2020,25000.00,15000,D,45230");
+            String ligne = Saisie.demanderLigne(scanner, "Votre entrée: ");
 
             String[] infosVoiture = ligne.split(",");
 
             if (infosVoiture.length != bonneLongueur) {
-                System.out.println("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
+                Saisie.afficherMessage("Erreur: il faut exactement " + bonneLongueur + " informations séparées par des virgules. Réessaie");
                 continue;
             }
 
@@ -314,16 +307,16 @@ public class Ajout {
                 int km = Integer.parseInt(infosVoiture[6]);
 
                 autoEcole.creerVoiture(marque, plaque, annee, prix, kmAchat, etat, km);
-                System.out.println("Voiture ajoutée dans le système.");
+                Saisie.afficherMessage("Voiture ajoutée dans le système.");
 
                 break;
 
             } catch (NumberFormatException e) {
-                System.out.println("Erreur: l'année, le prix ou le kilométrage doit être un nombre valide. Réessaie");
+                Saisie.afficherMessage("Erreur: l'année, le prix ou le kilométrage doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
-                System.out.println("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie.");
+                Saisie.afficherMessage("Erreur IllegalArgumentException: " + e.getMessage() + ". Réessaie.");
             } catch (OperationInvalideException e) {
-                System.out.println("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie.");
+                Saisie.afficherMessage("Erreur OperationInvalideException: " + e.getMessage() + ". Réessaie.");
             }
         }
     }

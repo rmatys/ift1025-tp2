@@ -114,6 +114,19 @@ public class AutoEcole {
     }
 
     /**
+     * Retourne les activités associées à un élève
+     * @param eleve l'élève dont on cherche les activités
+     * @return la liste des activités de l'élève
+     */
+    public ArrayList<Activite> getActivitesEleve(Eleve eleve) {
+        ArrayList<Activite> resultat = new ArrayList<>();
+        for (Activite activite : activites) {
+            if (activite.getEleve().equals(eleve)) resultat.add(activite);
+        }
+        return resultat;
+    }
+
+    /**
      * Retourne le prochain identifiant disponible pour une nouvelle activité
      * @return le prochain identifiant disponible pour une nouvelle activité
      */
@@ -171,6 +184,56 @@ public class AutoEcole {
     }
 
     /**
+     * Change le statut d'un paiement, valide le montant restant si applicable, et sauvegarde
+     * @param id l'identifiant du paiement à modifier
+     * @param nouvelEtat le nouveau statut du paiement
+     * @param montantRestant le nouveau montant restant, utilisé seulement si nouvelEtat est PP
+     * @throws OperationInvalideException si le montant restant demandé est supérieur à l'ancien
+     */
+    public void changerEtatPaiement(String id, StatutPaiement nouvelEtat, double montantRestant) throws OperationInvalideException {
+        Paiement paiement = rechercherPaiement(id);
+        if (paiement == null) return;
+
+        if (nouvelEtat.equals(StatutPaiement.P)) {
+            paiement.setMontantRestant(0);
+        } else if (nouvelEtat.equals(StatutPaiement.PP)) {
+            if (montantRestant > paiement.getMontantRestant()) {
+                throw new OperationInvalideException("le montant restant doit être plus petit que ce qu'il y avait avant");
+            }
+            paiement.setMontantRestant(montantRestant);
+        }
+
+        paiement.setDate(LocalDate.now());
+        paiement.setEtat(nouvelEtat);
+        sauvegarderPaiements();
+    }
+
+    /**
+     * Retourne les paiements associés à un élève
+     * @param eleve l'élève dont on cherche les paiements
+     * @return la liste des paiements de l'élève
+     */
+    public ArrayList<Paiement> getPaiementsEleve(Eleve eleve) {
+        ArrayList<Paiement> resultat = new ArrayList<>();
+        for (Paiement paiement : paiements) {
+            if (paiement.getEleve().equals(eleve)) resultat.add(paiement);
+        }
+        return resultat;
+    }
+
+    /**
+     * Retourne les paiements impayés
+     * @return la liste des paiements dont le statut est impayé
+     */
+    public ArrayList<Paiement> getPaiementsImpayes() {
+        ArrayList<Paiement> resultat = new ArrayList<>();
+        for (Paiement paiement : paiements) {
+            if (paiement.getStatutPaiement().equals(StatutPaiement.I)) resultat.add(paiement);
+        }
+        return resultat;
+    }
+
+    /**
      * Recherche un paiement dans la liste des paiements de l'auto-école en fonction de son identifiant
      * @param id l'identifiant du paiement à rechercher
      * @return le paiement correspondant à l'identifiant, ou null si aucun paiement n'est trouvé
@@ -207,6 +270,19 @@ public class AutoEcole {
      */
     public void ajouterVoiture(Voiture voiture) {
         voitures.add(voiture);
+        sauvegarderVoitures();
+    }
+
+    /**
+     * Change l'état d'une voiture et sauvegarde
+     * @param plaque la plaque de la voiture à modifier
+     * @param nouvelEtat le nouvel état de la voiture
+     */
+    public void changerEtatVoiture(String plaque, StatutVoiture nouvelEtat) {
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture == null) return;
+
+        voiture.setEtat(nouvelEtat);
         sauvegarderVoitures();
     }
 

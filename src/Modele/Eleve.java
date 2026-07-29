@@ -85,7 +85,6 @@ public class Eleve {
      */
     public void setDateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
-        System.out.println("L'élève à terminer, il n'est plus un élève actif.");
     }
 
     /**

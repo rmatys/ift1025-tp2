@@ -1,22 +1,20 @@
 package Controleur;
 
-import MenuTextuel.Gestion;
 import Modele.AutoEcole;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
+import Vue.Saisie;
 
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
  * Classe principale de l'application de gestion d'une auto-école
  */
-public class Main extends Application {
-    private static final Scanner scanner = new Scanner(System.in);
+public class Main {
+    // Locale.US pour que Scanner.nextDouble() accepte le point comme séparateur décimal,
+    // comme dans tous les exemples affichés par l'application (ex: "350.00")
+    private static final Scanner scanner = new Scanner(System.in).useLocale(Locale.US);
     private static final AutoEcole autoEcole = new AutoEcole();
     private static final boolean testing = false;
-    private static final boolean menuTextuel = true;
 
     /**
      * Point d'entrée de l'application
@@ -33,20 +31,9 @@ public class Main extends Application {
         autoEcole.chargerDepenses();
         autoEcole.chargerVoitures();
 
-        if (menuTextuel) {
-            Gestion.gestionAutoEcole(scanner, autoEcole);
-        } else {
-            launch(args);
-        }
+        Gestion.gestionAutoEcole(scanner, autoEcole);
 
         sauvegarde();
-    }
-
-    @Override
-    public void start(Stage stage) {
-        Label label = new Label("Hello, JavaFX!");
-        stage.setScene(new Scene(label, 300, 200));
-        stage.show();
     }
 
     /**
@@ -59,8 +46,6 @@ public class Main extends Application {
         autoEcole.sauvegarderDepensesVoiture();
         autoEcole.sauvegarderAutresDepenses();
         autoEcole.sauvegarderVoitures();
-        System.out.println("Sauvegarde terminée");
+        Saisie.afficherMessage("Sauvegarde terminée");
     }
-
-
 }
