@@ -228,7 +228,6 @@ public class Rapports {
                 System.err.println("Impossible de créer un folder dans: " + dir);
                 return false;
             }
-            }
         }
 
         File f = new File(dir, "rapportDepensesVoiture" + CSV.YEAR + ".txt");
@@ -377,6 +376,7 @@ public class Rapports {
 
         } catch (IOException ex) {
             logger.log(Level.SEVERE, "Une erreur est survenue", ex);
+            return false;
         }
     }
 }

@@ -5,7 +5,6 @@ import Modele.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Ajout {
@@ -91,31 +90,8 @@ public class Ajout {
                 String plaque = infosActivite[6];
 
                 PlageHoraire horaire = new PlageHoraire(date, heure, duree);
-                Eleve eleve = autoEcole.rechercherEleve(numSAAQ);
-                Voiture voiture = autoEcole.rechercherVoiture(plaque);
 
-                if (eleve == null) {
-                    System.out.println("Erreur: aucun élève trouvé avec le NumSAAQ " + numSAAQ + ". Réessaie");
-                    continue;
-                }
-
-                if (statut.equals(StatutActivite.C)) {
-                    eleve.setDateFin(LocalDate.now());
-                    autoEcole.sauvegarderActivites();
-                }
-
-                ArrayList<PlageHoraire> horaires = new ArrayList<>();
-                for (Activite activite : autoEcole.getActivites()) horaires.add(activite.getPlageHoraire());
-                if (horaire.estEnConflitHoraire(horaires)) {
-                    System.out.println("Conflit d'horaire à " + horaire + ". Réessaie");
-                    continue;
-                } else if (voiture != null && !voiture.estDisponible()) {
-                    System.out.println("La voiture de l'école n'est pas disponible. Réessaie");
-                    continue;
-                }
-
-                int prochainId = autoEcole.prochainIdActivite();
-                autoEcole.ajouterActivite(new Activite(prochainId, horaire, eleve, plaque, type, statut));
+                autoEcole.creerActivite(horaire, numSAAQ, plaque, type, statut);
                 System.out.println("Activité ajoutée dans le système.");
 
                 break;
@@ -123,6 +99,8 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le NumSAAQ ou la durée doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
+                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+            } catch (OperationInvalideException e) {
                 System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
             }
         }
@@ -236,18 +214,10 @@ public class Ajout {
                 String description = infosDepense[3];
                 double montant = Double.parseDouble(infosDepense[4]);
 
-                if (montant < 0) {
-                    System.out.println("Erreur: le montant ne peut pas être négatif. Réessaie");
-                    continue;
-                }
-
-                int prochainId = autoEcole.prochainIdDepenseVoiture();
-                autoEcole.ajouterDepenseVoiture(new DepenseVoiture(prochainId, plaque, date, categorie, description, montant));
+                autoEcole.creerDepenseVoiture(plaque, date, categorie, description, montant);
                 System.out.println("Dépense ajoutée dans le système");
 
-                Voiture voiture = autoEcole.rechercherVoiture(plaque);
-                if (voiture != null) {
-                    voiture.updateDepenses(autoEcole.getDepensesVoiture());
+                if (autoEcole.rechercherVoiture(plaque) != null) {
                     System.out.println("Dépense ajoutée pour la voiture: " + plaque);
                 }
 
@@ -256,6 +226,8 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
+                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+            } catch (OperationInvalideException e) {
                 System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
             }
         }
@@ -292,13 +264,7 @@ public class Ajout {
                 String description = infosDepense[2];
                 double montant = Double.parseDouble(infosDepense[3]);
 
-                if (montant < 0) {
-                    System.out.println("Erreur: le montant ne peut pas être négatif. Réessaie");
-                    continue;
-                }
-
-                int prochainId = autoEcole.prochainIdAutreDepense();
-                autoEcole.ajouterAutreDepense(new AutreDepense(prochainId, date, categorie, description, montant));
+                autoEcole.creerAutreDepense(date, categorie, description, montant);
                 System.out.println("Autre dépense ajouté dans le système.");
 
                 break;
@@ -306,6 +272,8 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: le montant doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
+                System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
+            } catch (OperationInvalideException e) {
                 System.out.println("Erreur: " + e.getMessage() + ". Réessaie");
             }
         }
@@ -345,14 +313,7 @@ public class Ajout {
                 StatutVoiture etat = StatutVoiture.valueOf(infosVoiture[5]);
                 int km = Integer.parseInt(infosVoiture[6]);
 
-                if (prix < 0 || kmAchat < 0 || km < 0) {
-                    System.out.println("Erreur: le prix et le kilométrage ne peuvent pas être négatifs. Réessaie");
-                    continue;
-                }
-
-                ArrayList<DepenseVoiture> depenses = autoEcole.trouverDepensesVoitureSelonPlaque(plaque);
-
-                autoEcole.ajouterVoiture(new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, depenses));
+                autoEcole.creerVoiture(marque, plaque, annee, prix, kmAchat, etat, km);
                 System.out.println("Voiture ajoutée dans le système.");
 
                 break;
@@ -360,6 +321,8 @@ public class Ajout {
             } catch (NumberFormatException e) {
                 System.out.println("Erreur: l'année, le prix ou le kilométrage doit être un nombre valide. Réessaie");
             } catch (IllegalArgumentException e) {
+                System.out.println("Erreur: " + e.getMessage() + ". Réessaie.");
+            } catch (OperationInvalideException e) {
                 System.out.println("Erreur: " + e.getMessage() + ". Réessaie.");
             }
         }

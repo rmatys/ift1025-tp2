@@ -125,6 +125,39 @@ public class AutoEcole {
         return max + 1;
     }
 
+    /**
+     * Valide puis crée une nouvelle activité pour un élève existant
+     * @throws OperationInvalideException si l'élève est introuvable, si l'horaire est en conflit
+     *         avec une autre activité, ou si la voiture demandée n'est pas disponible
+     */
+    public Activite creerActivite(PlageHoraire horaire, long numSAAQ, String plaque,
+                                   TypeActivite type, StatutActivite statut) throws OperationInvalideException {
+        Eleve eleve = rechercherEleve(numSAAQ);
+        if (eleve == null) {
+            throw new OperationInvalideException("aucun élève trouvé avec le NumSAAQ " + numSAAQ);
+        }
+
+        ArrayList<PlageHoraire> horaires = new ArrayList<>();
+        for (Activite activite : activites) horaires.add(activite.getPlageHoraire());
+        if (horaire.estEnConflitHoraire(horaires)) {
+            throw new OperationInvalideException("conflit d'horaire à " + horaire);
+        }
+
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture != null && !voiture.estDisponible()) {
+            throw new OperationInvalideException("la voiture de l'école n'est pas disponible");
+        }
+
+        if (statut.equals(StatutActivite.C)) {
+            eleve.setDateFin(LocalDate.now());
+            sauvegarderEleves();
+        }
+
+        Activite activite = new Activite(prochainIdActivite(), horaire, eleve, plaque, type, statut);
+        ajouterActivite(activite);
+        return activite;
+    }
+
 
     // Méthodes de gestion des paiements
 
@@ -191,6 +224,22 @@ public class AutoEcole {
         return null;
     }
 
+    /**
+     * Valide puis crée une nouvelle voiture pour l'auto-école
+     * @throws OperationInvalideException si le prix ou l'un des kilométrages est négatif
+     */
+    public Voiture creerVoiture(String marque, String plaque, int annee, double prix, int kmAchat,
+                                 StatutVoiture etat, int km) throws OperationInvalideException {
+        if (prix < 0 || kmAchat < 0 || km < 0) {
+            throw new OperationInvalideException("le prix et le kilométrage ne peuvent pas être négatifs");
+        }
+
+        ArrayList<DepenseVoiture> depenses = trouverDepensesVoitureSelonPlaque(plaque);
+        Voiture voiture = new Voiture(plaque, marque, annee, prix, kmAchat, etat, km, depenses);
+        ajouterVoiture(voiture);
+        return voiture;
+    }
+
 
     // Méthodes de gestion des dépenses
 
@@ -210,6 +259,42 @@ public class AutoEcole {
     public void ajouterAutreDepense(AutreDepense depense) {
         autresDepenses.add(depense);
         sauvegarderAutresDepenses();
+    }
+
+    /**
+     * Valide puis crée une nouvelle dépense pour une voiture de l'auto-école
+     * @throws OperationInvalideException si le montant est négatif
+     */
+    public DepenseVoiture creerDepenseVoiture(String plaque, LocalDate date, TypeDepenseVoiture categorie,
+                                               String description, double montant) throws OperationInvalideException {
+        if (montant < 0) {
+            throw new OperationInvalideException("le montant ne peut pas être négatif");
+        }
+
+        DepenseVoiture depense = new DepenseVoiture(prochainIdDepenseVoiture(), plaque, date, categorie, description, montant);
+        ajouterDepenseVoiture(depense);
+
+        Voiture voiture = rechercherVoiture(plaque);
+        if (voiture != null) {
+            voiture.updateDepenses(depensesVoiture);
+        }
+
+        return depense;
+    }
+
+    /**
+     * Valide puis crée une nouvelle autre dépense de l'auto-école
+     * @throws OperationInvalideException si le montant est négatif
+     */
+    public AutreDepense creerAutreDepense(LocalDate date, TypeAutreDepense categorie,
+                                           String description, double montant) throws OperationInvalideException {
+        if (montant < 0) {
+            throw new OperationInvalideException("le montant ne peut pas être négatif");
+        }
+
+        AutreDepense depense = new AutreDepense(prochainIdAutreDepense(), date, categorie, description, montant);
+        ajouterAutreDepense(depense);
+        return depense;
     }
 
     /**
