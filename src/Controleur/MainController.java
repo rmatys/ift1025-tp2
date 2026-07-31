@@ -10,11 +10,9 @@ import javafx.stage.Stage;
 
 public class MainController {
 
-    private MainView view;
     private AutoEcole autoEcole;
 
     public MainController(MainView view, AutoEcole autoEcole) {
-        this.view = view;
         this.autoEcole = autoEcole;
 
         view.getBtnEleves().setOnAction(e -> ouvrirEleves());
