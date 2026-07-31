@@ -1,7 +1,7 @@
-package controleur;
+package tp2.src.controleur;
 
-import modele.*;
-import vue.ActiviteView;
+import tp2.src.modele.*;
+import tp2.src.vue.ActiviteView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import java.time.LocalDate;
@@ -25,7 +25,10 @@ public class ActiviteController {
     }
 
     private void rafraichirTable() {
-        view.getTable().setItems(FXCollections.observableArrayList(autoEcole.getActivites()));
+        view.getTable().setItems(FXCollections.observableArrayList(
+            autoEcole.getActivites() == null
+                ? java.util.Collections.emptyList()
+                : autoEcole.getActivites()));
     }
 
     private void ajouter() {
