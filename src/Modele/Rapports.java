@@ -142,16 +142,16 @@ public class Rapports {
             TypeActivite typeActivite = activite.getType();
             if (typeActivite == null) continue;
             switch (typeActivite) {
-                case TypeActivite.LPA:
-                case TypeActivite.LPZ:
-                case TypeActivite.LPS:
-                case TypeActivite.LT:
+                case LPA:
+                case LPZ:
+                case LPS:
+                case LT:
                     nombreLecons++;
                     revenuLecons = activite.getMontant();
                     break;
-                case TypeActivite.ET:
-                case TypeActivite.EP:
-                case TypeActivite.EPL:
+                case ET:
+                case EP:
+                case EPL:
                     nombreExamens++;
                     revenuExamens = activite.getMontant();
                     break;
@@ -240,13 +240,13 @@ public class Rapports {
 
             total += d.getMontant();
             switch (categorie) {
-                case TypeDepenseVoiture.R:
+                case R:
                     totalR += d.getMontant();
                     break;
-                case TypeDepenseVoiture.E:
+                case E:
                     totalE += d.getMontant();
                     break;
-                case TypeDepenseVoiture.C:
+                case C:
                     totalC += d.getMontant();
                     break;
                 default:
