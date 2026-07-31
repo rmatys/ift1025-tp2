@@ -1,4 +1,4 @@
-package modele;
+package tp2.src.modele;
 
 /**
  * Enumération représentant les différents types de dépenses liées à une voiture.

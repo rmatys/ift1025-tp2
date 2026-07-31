@@ -1,4 +1,4 @@
-package modele;
+package tp2.src.modele;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -1,13 +1,13 @@
-package controleur;
+package tp2.src.controleur;
 
-import modele.AutoEcole;
-import vue.MainView;
-import vue.EleveView;
-import vue.ActiviteView;
-import vue.PaiementView;
-import controleur.EleveController;
-import controleur.ActiviteController;
-import controleur.PaiementController;
+import tp2.src.modele.AutoEcole;
+import tp2.src.vue.MainView;
+import tp2.src.vue.EleveView;
+import tp2.src.vue.ActiviteView;
+import tp2.src.vue.PaiementView;
+import tp2.src.controleur.EleveController;
+import tp2.src.controleur.ActiviteController;
+import tp2.src.controleur.PaiementController;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;

@@ -1,6 +1,6 @@
-package vue;
+package tp2.src.vue;
 
-import modele.*;
+import tp2.src.modele.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

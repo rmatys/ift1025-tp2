@@ -1,8 +1,8 @@
-package controleur;
+package tp2.src.controleur;
 
-import modele.AutoEcole;
-import modele.Eleve;
-import vue.EleveView;
+import tp2.src.modele.AutoEcole;
+import tp2.src.modele.Eleve;
+import tp2.src.vue.EleveView;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;

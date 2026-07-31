@@ -1,6 +1,6 @@
-package vue;
+package tp2.src.vue;
 
-import modele.*;
+import tp2.src.modele.*;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;

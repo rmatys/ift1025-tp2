@@ -1,8 +1,8 @@
-package vue;
+package tp2.src.vue;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import modele.*;
+import tp2.src.modele.*;
 
 public class PaiementView {
 

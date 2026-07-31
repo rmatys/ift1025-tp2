@@ -1,4 +1,4 @@
-package modele;
+package tp2.src.modele;
 
 /**
  * Classe représentant une activité d'un élève
@@ -37,13 +37,22 @@ public class Activite {
     public double getMontant() {
         double nbrHeures = horaire.getNombreHeure();
 
-        return switch (typeActivite) {
-            case TypeActivite.LPA, TypeActivite.LPZ, TypeActivite.LPS -> ((!plaqueVoiture.isBlank()) ? 75.0 : 50.0) * nbrHeures;
-            case TypeActivite.LT -> 45.0 * nbrHeures;
-            case TypeActivite.ET -> 40.0;
-            case TypeActivite.EP -> 150.0;
-            case TypeActivite.EPL -> 85.0;
-        };
+        switch (typeActivite) {
+            case LPA:
+            case LPZ:
+            case LPS:
+                return ((!plaqueVoiture.isBlank()) ? 75.0 : 50.0) * nbrHeures;
+            case LT:
+                return 45.0 * nbrHeures;
+            case ET:
+                return 40.0;
+            case EP:
+                return 150.0;
+            case EPL:
+                return 85.0;
+            default:
+                throw new IllegalArgumentException("Type d'activité inconnu: " + typeActivite);
+        }
     }
 
     /**

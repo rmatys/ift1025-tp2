@@ -1,13 +1,9 @@
-package vue;
+package tp2.src.vue;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import modele.Activite;
-import modele.PlageHoraire;
-import modele.TypeActivite;
-import modele.StatutActivite;
-import modele.Eleve;
+import tp2.src.modele.Activite;
 
 public class ActiviteView {
 

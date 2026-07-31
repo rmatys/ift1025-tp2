@@ -1,4 +1,4 @@
-package modele;
+package tp2.src.modele;
 
 /**
  * Enumération représentant le statut d'un paiement.

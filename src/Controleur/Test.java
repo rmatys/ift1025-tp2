@@ -1,6 +1,6 @@
-package controleur;
+package tp2.src.controleur;
 
-import modele.*;
+import tp2.src.modele.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

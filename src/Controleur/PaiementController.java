@@ -1,7 +1,7 @@
-package controleur;
+package tp2.src.controleur;
 
-import modele.*;
-import vue.PaiementView;
+import tp2.src.modele.*;
+import tp2.src.vue.PaiementView;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
