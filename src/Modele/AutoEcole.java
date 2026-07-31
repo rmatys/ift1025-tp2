@@ -61,6 +61,31 @@ public class AutoEcole {
         return null;
     }
 
+    /**
+     * Valide puis remplace les informations d'un élève existant de l'auto-école,
+     * en conservant sa date de début et sa date de fin
+     * @param numSAAQ le numéro SAAQ de l'élève à modifier
+     * @throws IllegalArgumentException si aucun élève ne correspond au numéro SAAQ donné
+     */
+    public Eleve modifierEleve(long numSAAQ, String prenom, String nom, String adresse, String telephone) {
+        int index = -1;
+        for (int i = 0; i < eleves.size(); i++) {
+            if (eleves.get(i).getNumSAAQ() == numSAAQ) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            throw new IllegalArgumentException("aucun élève trouvé avec le numéro SAAQ " + numSAAQ);
+        }
+
+        Eleve ancien = eleves.get(index);
+        Eleve nouveau = new Eleve(numSAAQ, prenom, nom, adresse, telephone, ancien.getDateDebut(), ancien.getDateFin());
+        eleves.set(index, nouveau);
+        sauvegarderEleves();
+        return nouveau;
+    }
+
 
     // Méthodes de gestion des activités
 
