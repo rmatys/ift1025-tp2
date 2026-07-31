@@ -5,10 +5,6 @@ import tp2.src.vue.MainView;
 import tp2.src.vue.EleveView;
 import tp2.src.vue.ActiviteView;
 import tp2.src.vue.PaiementView;
-import tp2.src.controleur.EleveController;
-import tp2.src.controleur.ActiviteController;
-import tp2.src.controleur.PaiementController;
-
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 

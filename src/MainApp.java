@@ -19,7 +19,7 @@ public class MainApp extends Application {
         autoEcole.chargerVoitures();
 
         MainView mainView = new MainView();
-        MainController controller = new MainController(mainView, autoEcole);
+        new MainController(mainView, autoEcole);
 
         Scene scene = new Scene(mainView.getRoot(), 900, 600);
         stage.setTitle("Auto-École - Gestion");
