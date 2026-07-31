@@ -1,10 +1,8 @@
-package ift1025-tp2.src.Controleur;
+package controleur;
 
-package controller;
-
-import model.AutoEcole;
-import model.Eleve;
-import view.EleveView;
+import modele.AutoEcole;
+import modele.Eleve;
+import vue.EleveView;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;

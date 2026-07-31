@@ -1,9 +1,13 @@
-package ift1025-tp2.src.MenuTextuel;
-
-package view;
+package vue;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+
+import modele.Activite;
+import modele.PlageHoraire;
+import modele.TypeActivite;
+import modele.StatutActivite;
+import modele.Eleve;
 
 public class ActiviteView {
 

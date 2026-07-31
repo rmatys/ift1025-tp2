@@ -1,6 +1,6 @@
-package MenuTextuel;
+package vue;
 
-import Modele.*;
+import modele.*;
 
 import java.util.ArrayList;
 import java.util.Scanner;

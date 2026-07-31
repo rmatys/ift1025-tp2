@@ -1,9 +1,8 @@
-package ift1025-tp2.src.MenuTextuel;
-
-package view;
+package vue;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import modele.*;
 
 public class PaiementView {
 

@@ -1,4 +1,4 @@
-package Modele;
+package modele;
 
 /**
  * Enumération représentant les différentes méthodes de paiement.

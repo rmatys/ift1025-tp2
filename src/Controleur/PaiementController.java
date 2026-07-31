@@ -1,9 +1,7 @@
-package ift1025-tp2.src.Controleur;
+package controleur;
 
-package controller;
-
-import model.*;
-import view.PaiementView;
+import modele.*;
+import vue.PaiementView;
 
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;

@@ -1,6 +1,6 @@
-package MenuTextuel;
+package vue;
 
-import Modele.*;
+import modele.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

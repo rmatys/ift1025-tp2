@@ -1,6 +1,6 @@
-package Controleur;
+package controleur;
 
-import Modele.*;
+import modele.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

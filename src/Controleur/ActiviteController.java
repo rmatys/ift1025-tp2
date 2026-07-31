@@ -1,10 +1,7 @@
-package ift1025-tp2.src.Controleur;
+package controleur;
 
-package controller;
-
-import model.*;
-import view.ActiviteView;
-
+import modele.*;
+import vue.ActiviteView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import java.time.LocalDate;

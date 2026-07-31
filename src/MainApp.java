@@ -1,11 +1,11 @@
-package ift1025-tp2.src;
+package src;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import view.MainView;
-import controller.MainController;
-import model.AutoEcole;
+import vue.MainView;
+import controleur.MainController;
+import modele.AutoEcole;
 
 public class MainApp extends Application {
 

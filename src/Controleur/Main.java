@@ -1,7 +1,7 @@
-package Controleur;
+package controleur;
 
-import MenuTextuel.Gestion;
-import Modele.AutoEcole;
+import vue.Gestion;
+import modele.AutoEcole;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

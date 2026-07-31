@@ -1,6 +1,4 @@
-package ift1025-tp2.src.MenuTextuel;
-
-package view;
+package vue;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

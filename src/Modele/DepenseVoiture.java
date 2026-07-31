@@ -1,4 +1,4 @@
-package Modele;
+package modele;
 
 import java.time.LocalDate;
 
@@ -49,7 +49,7 @@ public class DepenseVoiture {
      */
     @Override
     public String toString() {
-        return "AutreDepense{id=" + idDepense +
+        return "DepenseVoiture{id=" + idDepense +
                 ", plaque=" + plaque +
                 ", date=" + date +
                 ", type=" + typeDepenseVoiture.getLibelle() +

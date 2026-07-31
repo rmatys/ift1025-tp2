@@ -1,4 +1,4 @@
-package Modele;
+package modele;
 
 /**
  * Enumération représentant les différents types d'activités.

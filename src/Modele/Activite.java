@@ -1,4 +1,4 @@
-package Modele;
+package modele;
 
 /**
  * Classe représentant une activité d'un élève

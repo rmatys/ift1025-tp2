@@ -1,12 +1,13 @@
-package ift1025-tp2.src.Controleur;
+package controleur;
 
-package controller;
-
-import model.AutoEcole;
-import view.MainView;
-import view.EleveView;
-import view.ActiviteView;
-import view.PaiementView;
+import modele.AutoEcole;
+import vue.MainView;
+import vue.EleveView;
+import vue.ActiviteView;
+import vue.PaiementView;
+import controleur.EleveController;
+import controleur.ActiviteController;
+import controleur.PaiementController;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
