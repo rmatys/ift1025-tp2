@@ -1,11 +1,9 @@
-package tp2.src;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import tp2.src.vue.MainView;
-import tp2.src.controleur.MainController;
-import tp2.src.modele.AutoEcole;
+import Vue.MainView;
+import Controleur.MainController;
+import Modele.AutoEcole;
 
 public class MainApp extends Application {
 

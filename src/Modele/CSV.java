@@ -1,4 +1,4 @@
-package tp2.src.modele;
+package Modele;
 
 import java.io.FileReader;
 import java.io.BufferedReader;

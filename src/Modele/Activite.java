@@ -1,4 +1,4 @@
-package tp2.src.modele;
+package Modele;
 
 /**
  * Classe représentant une activité d'un élève

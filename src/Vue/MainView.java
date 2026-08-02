@@ -1,4 +1,4 @@
-package tp2.src.vue;
+package Vue;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

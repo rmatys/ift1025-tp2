@@ -1,7 +1,7 @@
-package tp2.src.controleur;
+package Controleur;
 
-import tp2.src.vue.Gestion;
-import tp2.src.modele.AutoEcole;
+import Vue.Gestion;
+import Modele.AutoEcole;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;

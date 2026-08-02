@@ -1,9 +1,9 @@
-package tp2.src.vue;
+package Vue;
 
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
-import tp2.src.modele.Activite;
+import Modele.Activite;
 
 public class ActiviteView {
 

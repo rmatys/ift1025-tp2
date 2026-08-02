@@ -1,7 +1,7 @@
-package tp2.src.controleur;
+package Controleur;
 
-import tp2.src.modele.*;
-import tp2.src.vue.ActiviteView;
+import Modele.*;
+import Vue.ActiviteView;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Alert;
 import java.time.LocalDate;

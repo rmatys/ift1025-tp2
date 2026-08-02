@@ -1,4 +1,4 @@
-package tp2.src.modele;
+package Modele;
 
 import java.time.LocalDate;
 

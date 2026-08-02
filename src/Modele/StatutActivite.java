@@ -1,4 +1,4 @@
-package tp2.src.modele;
+package Modele;
 
 /**
  * Enumération représentant le statut d'une activité.

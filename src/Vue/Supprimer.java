@@ -1,6 +1,6 @@
-package tp2.src.vue;
+package Vue;
 
-import tp2.src.modele.*;
+import Modele.*;
 
 import java.util.Scanner;
 
