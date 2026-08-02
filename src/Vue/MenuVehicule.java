@@ -1,7 +1,5 @@
 package Vue;
 
-import Modele.AutoEcole;
-import Modele.OperationInvalideException;
 import Modele.StatutVoiture;
 import Modele.Voiture;
 import javafx.collections.FXCollections;
@@ -19,18 +17,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
+
 import Autre.Util;
 
 public class MenuVehicule extends BorderPane {
-    private final AutoEcole autoEcole;
     private TableView<Voiture> table;
     private TextField champPlaque, champMarque, champAnnee, champPrix, champKmAchat, champKm;
     private ComboBox<StatutVoiture> champEtat;
+    private Button btnAjouter, btnModifier, btnSupprimer, btnRetour;
     private Voiture voitureSelectionnee;
 
-    public MenuVehicule(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-
+    public MenuVehicule() {
         // -- construction de l'interface --
         table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
@@ -52,10 +50,10 @@ public class MenuVehicule extends BorderPane {
         champKmAchat.setPromptText("Ex : 10000");
         champKm.setPromptText("Ex : 25000");
 
-        Button btnAjouter = Util.creerBoutonMenu("Ajouter");
-        Button btnModifier = Util.creerBoutonMenu("Modifier");
-        Button btnSupprimer = Util.creerBoutonMenu("Supprimer");
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnAjouter = Util.creerBoutonMenu("Ajouter");
+        btnModifier = Util.creerBoutonMenu("Modifier");
+        btnSupprimer = Util.creerBoutonMenu("Supprimer");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
 
         Label titreFormulaire = new Label("Fiche véhicule");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -83,18 +81,10 @@ public class MenuVehicule extends BorderPane {
         setCenter(table);
         setRight(formulaire);
 
-        rafraichirTable();
-
         table.getSelectionModel().selectedItemProperty().addListener((obs, ancienne, nouvelle) -> {
             voitureSelectionnee = nouvelle;
             if (nouvelle != null) remplirFormulaire(nouvelle);
         });
-
-        // -- gestion des événements (appelle le modèle directement) --
-        btnAjouter.setOnAction(e -> ajouterVoiture());
-        btnModifier.setOnAction(e -> modifierVoiture());
-        btnSupprimer.setOnAction(e -> supprimerVoiture());
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
     }
 
     private void creerColonnes() {
@@ -129,71 +119,18 @@ public class MenuVehicule extends BorderPane {
         table.getColumns().addAll(colPlaque, colMarque, colAnnee, colPrix, colKmAchat, colKm, colEtat);
     }
 
-    private void ajouterVoiture() {
-        try {
-            if (champPlaque.getText().isBlank() || champMarque.getText().isBlank()
-                    || champAnnee.getText().isBlank() || champPrix.getText().isBlank()
-                    || champKmAchat.getText().isBlank() || champKm.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setOnAjouter(Runnable action) { btnAjouter.setOnAction(e -> action.run()); }
+    public void setOnModifier(Runnable action) { btnModifier.setOnAction(e -> action.run()); }
+    public void setOnSupprimer(Runnable action) { btnSupprimer.setOnAction(e -> action.run()); }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
 
-            if (autoEcole.rechercherVoiture(champPlaque.getText().trim()) != null) {
-                throw new IllegalArgumentException("Un véhicule avec cette plaque existe déjà.");
-            }
-
-            int annee = Integer.parseInt(champAnnee.getText().trim());
-            double prix = Double.parseDouble(champPrix.getText().trim());
-            int kmAchat = Integer.parseInt(champKmAchat.getText().trim());
-            int km = Integer.parseInt(champKm.getText().trim());
-
-            autoEcole.creerVoiture(champMarque.getText(), champPlaque.getText(), annee, prix,
-                                    kmAchat, champEtat.getValue(), km);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "L'année, le prix et les kilométrages doivent être des nombres valides.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- mise à jour de l'affichage (le contrôleur les appelle) ----
+    public void afficherVoitures(List<Voiture> voitures) {
+        table.setItems(FXCollections.observableArrayList(voitures));
     }
 
-    private void modifierVoiture() {
-        try {
-            if (voitureSelectionnee == null) {
-                throw new IllegalArgumentException("Sélectionnez un véhicule à modifier dans la liste.");
-            }
-
-            if (champMarque.getText().isBlank() || champAnnee.getText().isBlank()
-                    || champPrix.getText().isBlank() || champKmAchat.getText().isBlank()
-                    || champKm.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
-
-            int annee = Integer.parseInt(champAnnee.getText().trim());
-            double prix = Double.parseDouble(champPrix.getText().trim());
-            int kmAchat = Integer.parseInt(champKmAchat.getText().trim());
-            int km = Integer.parseInt(champKm.getText().trim());
-
-            autoEcole.modifierVoiture(voitureSelectionnee.getPlaque(), champMarque.getText(),
-                                       annee, prix, kmAchat, champEtat.getValue(), km);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "L'année, le prix et les kilométrages doivent être des nombres valides.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
-    }
-
-    private void supprimerVoiture() {
-        if (voitureSelectionnee != null) {
-            autoEcole.supprimerVoiture(voitureSelectionnee.getPlaque());
-            rafraichirTable();
-            viderFormulaire();
-        }
-    }
-
-    private void remplirFormulaire(Voiture voiture) {
+    public void remplirFormulaire(Voiture voiture) {
         champPlaque.setText(voiture.getPlaque());
         champPlaque.setDisable(true);
         champMarque.setText(voiture.getMarque());
@@ -204,7 +141,7 @@ public class MenuVehicule extends BorderPane {
         champEtat.setValue(voiture.getEtat());
     }
 
-    private void viderFormulaire() {
+    public void viderFormulaire() {
         voitureSelectionnee = null;
         table.getSelectionModel().clearSelection();
         champPlaque.clear();
@@ -217,8 +154,17 @@ public class MenuVehicule extends BorderPane {
         champEtat.setValue(StatutVoiture.D);
     }
 
-    private void rafraichirTable() {
-        table.setItems(FXCollections.observableArrayList(autoEcole.getVoitures()));
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 
+    // ---- lecture de la saisie brute (le contrôleur les lit) ----
+    public String getTextePlaque() { return champPlaque.getText(); }
+    public String getTexteMarque() { return champMarque.getText(); }
+    public String getTexteAnnee() { return champAnnee.getText(); }
+    public String getTextePrix() { return champPrix.getText(); }
+    public String getTexteKmAchat() { return champKmAchat.getText(); }
+    public String getTexteKm() { return champKm.getText(); }
+    public StatutVoiture getEtatChoisi() { return champEtat.getValue(); }
+    public Voiture getVoitureSelectionnee() { return voitureSelectionnee; }
 }

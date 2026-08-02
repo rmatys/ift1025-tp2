@@ -1,17 +1,16 @@
 package Vue;
 
 import Autre.Util;
-import Modele.AutoEcole;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 public class MenuPrincipal extends VBox {
+    private Button btnEleves, btnActivites, btnVoitures, btnPaiements, btnDepenses, btnRapports;
 
-    public MenuPrincipal(AutoEcole autoEcole, BorderPane conteneur) {
+    public MenuPrincipal() {
         setSpacing(15);
         setPadding(new Insets(40));
         setAlignment(Pos.TOP_CENTER);
@@ -27,21 +26,21 @@ public class MenuPrincipal extends VBox {
         entete.setAlignment(Pos.CENTER);
         entete.setPadding(new Insets(0, 0, 25, 0));
 
-        Button btnEleves = Util.creerBoutonMenu("Gestion des élèves");
-        Button btnActivites = Util.creerBoutonMenu("Gestion des activités");
-        Button btnVoitures = Util.creerBoutonMenu("Gestion des véhicules");
-        Button btnPaiements = Util.creerBoutonMenu("Gestion des paiements");
-        Button btnDepenses = Util.creerBoutonMenu("Gestion des dépenses");
-        Button btnRapports = Util.creerBoutonMenu("Génération de rapports");
-
-        btnEleves.setOnAction(e -> conteneur.setCenter(new MenuEleve(autoEcole, conteneur)));
-        btnActivites.setOnAction(e -> conteneur.setCenter(new MenuActivite(autoEcole, conteneur)));
-        btnVoitures.setOnAction(e -> conteneur.setCenter(new MenuVehicule(autoEcole, conteneur)));
-        btnPaiements.setOnAction(e -> conteneur.setCenter(new MenuPaiement(autoEcole, conteneur)));
-        btnDepenses.setOnAction(e -> conteneur.setCenter(new MenuDepense(autoEcole, conteneur)));
-        btnRapports.setOnAction(e -> conteneur.setCenter(new MenuRapport(autoEcole, conteneur)));
+        btnEleves = Util.creerBoutonMenu("Gestion des élèves");
+        btnActivites = Util.creerBoutonMenu("Gestion des activités");
+        btnVoitures = Util.creerBoutonMenu("Gestion des véhicules");
+        btnPaiements = Util.creerBoutonMenu("Gestion des paiements");
+        btnDepenses = Util.creerBoutonMenu("Gestion des dépenses");
+        btnRapports = Util.creerBoutonMenu("Génération de rapports");
 
         getChildren().addAll(entete, btnEleves, btnActivites, btnVoitures,
                               btnPaiements, btnDepenses, btnRapports);
     }
+
+    public void setOnEleves(Runnable action) { btnEleves.setOnAction(e -> action.run()); }
+    public void setOnActivites(Runnable action) { btnActivites.setOnAction(e -> action.run()); }
+    public void setOnVoitures(Runnable action) { btnVoitures.setOnAction(e -> action.run()); }
+    public void setOnPaiements(Runnable action) { btnPaiements.setOnAction(e -> action.run()); }
+    public void setOnDepenses(Runnable action) { btnDepenses.setOnAction(e -> action.run()); }
+    public void setOnRapports(Runnable action) { btnRapports.setOnAction(e -> action.run()); }
 }

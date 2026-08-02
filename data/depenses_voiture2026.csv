@@ -13,3 +13,4 @@ ID_Depense,Plaque,Date,Categorie,Description,Montant
 12,ABC123,07-01-2026,R,Remplacement alternateur,231.07
 13,GHI789,07-04-2026,C,Essence Petro-Canada,104.48
 14,JKL321,26-06-2026,C,Plein d'essence,54.56
+15,JKL321,20-08-2026,R,changement huile,85.5

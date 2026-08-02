@@ -62,7 +62,7 @@ public class AutoEcole {
     }
 
     /**
-     * Valide puis remplace les informations d'un élève existant de l'auto-école,
+     * Valide puis met à jour en place les informations d'un élève existant de l'auto-école,
      * en conservant sa date de début et sa date de fin
      * @param numSAAQ le numéro SAAQ de l'élève à modifier
      * @throws IllegalArgumentException si aucun élève ne correspond au numéro SAAQ donné
@@ -79,11 +79,32 @@ public class AutoEcole {
             throw new IllegalArgumentException("aucun élève trouvé avec le numéro SAAQ " + numSAAQ);
         }
 
-        Eleve ancien = eleves.get(index);
-        Eleve nouveau = new Eleve(numSAAQ, prenom, nom, adresse, telephone, ancien.getDateDebut(), ancien.getDateFin());
-        eleves.set(index, nouveau);
+        Eleve eleve = eleves.get(index);
+        eleve.setNom(nom);
+        eleve.setPrenom(prenom);
+        eleve.setAdresse(adresse);
+        eleve.setTelephone(telephone);
         sauvegarderEleves();
-        return nouveau;
+        return eleve;
+    }
+
+    /**
+     * Recherche les élèves dont le numéro SAAQ, le nom ou le prénom contient le texte donné
+     * @param texte le texte à rechercher, insensible à la casse ; si vide ou null, retourne tous les élèves
+     * @return la liste des élèves correspondants
+     */
+    public ArrayList<Eleve> rechercherEleves(String texte) {
+        String recherche = texte == null ? "" : texte.trim().toLowerCase();
+        ArrayList<Eleve> resultat = new ArrayList<>();
+        for (Eleve eleve : eleves) {
+            if (recherche.isEmpty()
+                    || String.valueOf(eleve.getNumSAAQ()).contains(recherche)
+                    || eleve.getNom().toLowerCase().contains(recherche)
+                    || eleve.getPrenom().toLowerCase().contains(recherche)) {
+                resultat.add(eleve);
+            }
+        }
+        return resultat;
     }
 
 
@@ -133,8 +154,27 @@ public class AutoEcole {
             TypeActivite type = activite.getType();
             if (type.equals(TypeActivite.EP) || type.equals(TypeActivite.EPL)) {
                 activite.getEleve().setDateFin(LocalDate.now());
+                sauvegarderEleves();
             }
         }
+        sauvegarderActivites();
+    }
+
+    /**
+     * Change le statut d'une activité et sauvegarde ; complète l'activité si le nouveau statut est C
+     * @param id l'identifiant de l'activité à modifier
+     * @param nouveauStatut le nouveau statut de l'activité
+     */
+    public void changerStatutActivite(int id, StatutActivite nouveauStatut) {
+        if (nouveauStatut == StatutActivite.C) {
+            completerActivite(id);
+            return;
+        }
+
+        Activite activite = rechercherActivite(id);
+        if (activite == null) return;
+
+        activite.setStatut(nouveauStatut);
         sauvegarderActivites();
     }
 
@@ -273,6 +313,26 @@ public class AutoEcole {
     }
 
     /**
+     * Recherche les paiements dont l'élève associé a un numéro SAAQ, un nom ou un prénom contenant le texte donné
+     * @param texte le texte à rechercher, insensible à la casse ; si vide ou null, retourne tous les paiements
+     * @return la liste des paiements correspondants
+     */
+    public ArrayList<Paiement> rechercherPaiements(String texte) {
+        String recherche = texte == null ? "" : texte.trim().toLowerCase();
+        ArrayList<Paiement> resultat = new ArrayList<>();
+        for (Paiement paiement : paiements) {
+            Eleve eleve = paiement.getEleve();
+            if (recherche.isEmpty()
+                    || String.valueOf(eleve.getNumSAAQ()).contains(recherche)
+                    || eleve.getNom().toLowerCase().contains(recherche)
+                    || eleve.getPrenom().toLowerCase().contains(recherche)) {
+                resultat.add(paiement);
+            }
+        }
+        return resultat;
+    }
+
+    /**
      * Retourne le prochain numéro de paiement disponible pour un nouveau paiement
      * @return le prochain numéro de paiement disponible pour un nouveau paiement
      */
@@ -336,10 +396,14 @@ public class AutoEcole {
 
     /**
      * Valide puis crée une nouvelle voiture pour l'auto-école
-     * @throws OperationInvalideException si le prix ou l'un des kilométrages est négatif
+     * @throws OperationInvalideException si une voiture existe déjà avec cette plaque, ou si le prix
+     *         ou l'un des kilométrages est négatif
      */
     public Voiture creerVoiture(String marque, String plaque, int annee, double prix, int kmAchat,
                                  StatutVoiture etat, int km) throws OperationInvalideException {
+        if (rechercherVoiture(plaque) != null) {
+            throw new OperationInvalideException("un véhicule avec cette plaque existe déjà");
+        }
         if (prix < 0 || kmAchat < 0 || km < 0) {
             throw new OperationInvalideException("le prix et le kilométrage ne peuvent pas être négatifs");
         }
@@ -428,6 +492,40 @@ public class AutoEcole {
         AutreDepense depense = new AutreDepense(prochainIdAutreDepense(), date, categorie, description, montant);
         ajouterAutreDepense(depense);
         return depense;
+    }
+
+    /**
+     * Recherche les dépenses de voiture appartenant à une catégorie donnée
+     * @param categorieLibelle le libellé de la catégorie recherchée ; si vide ou null, retourne toutes les dépenses
+     * @return la liste des dépenses de voiture correspondantes
+     */
+    public ArrayList<DepenseVoiture> rechercherDepensesVoiture(String categorieLibelle) {
+        if (categorieLibelle == null || categorieLibelle.isBlank()) {
+            return new ArrayList<>(depensesVoiture);
+        }
+
+        ArrayList<DepenseVoiture> resultat = new ArrayList<>();
+        for (DepenseVoiture depense : depensesVoiture) {
+            if (depense.getCategorie().getLibelle().equals(categorieLibelle)) resultat.add(depense);
+        }
+        return resultat;
+    }
+
+    /**
+     * Recherche les autres dépenses appartenant à une catégorie donnée
+     * @param categorieLibelle le libellé de la catégorie recherchée ; si vide ou null, retourne toutes les dépenses
+     * @return la liste des autres dépenses correspondantes
+     */
+    public ArrayList<AutreDepense> rechercherAutresDepenses(String categorieLibelle) {
+        if (categorieLibelle == null || categorieLibelle.isBlank()) {
+            return new ArrayList<>(autresDepenses);
+        }
+
+        ArrayList<AutreDepense> resultat = new ArrayList<>();
+        for (AutreDepense depense : autresDepenses) {
+            if (depense.getCategorie().getLibelle().equals(categorieLibelle)) resultat.add(depense);
+        }
+        return resultat;
     }
 
     /**

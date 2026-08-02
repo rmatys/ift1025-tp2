@@ -9,10 +9,10 @@ import java.util.Objects;
  * qui étaient auparavant dans Personne.
  */
 public class Eleve {
-    private final String nom;
-    private final String prenom;
-    private final String adresse;
-    private final String telephone;
+    private String nom;
+    private String prenom;
+    private String adresse;
+    private String telephone;
     private final long numSAAQ;
     private final LocalDate dateDebut;
     private LocalDate dateFin;
@@ -85,6 +85,38 @@ public class Eleve {
      */
     public void setDateFin(LocalDate dateFin) {
         this.dateFin = dateFin;
+    }
+
+    /**
+     * Définit le nom de l'élève
+     * @param nom le nom à définir
+     */
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    /**
+     * Définit le prénom de l'élève
+     * @param prenom le prénom à définir
+     */
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    /**
+     * Définit l'adresse de l'élève
+     * @param adresse l'adresse à définir
+     */
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+
+    /**
+     * Définit le numéro de téléphone de l'élève
+     * @param telephone le numéro de téléphone à définir
+     */
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     /**

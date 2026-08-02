@@ -1,10 +1,8 @@
 package Vue;
 
 import Modele.Activite;
-import Modele.AutoEcole;
 import Modele.Eleve;
 import Modele.MethodePaiement;
-import Modele.OperationInvalideException;
 import Modele.Paiement;
 import Modele.StatutPaiement;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,12 +24,12 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import Autre.Util;
 
 public class MenuPaiement extends BorderPane {
-    private final AutoEcole autoEcole;
     private TableView<Paiement> table;
     private TextField champRecherche;
     private ComboBox<Eleve> champEleve;
@@ -40,11 +38,10 @@ public class MenuPaiement extends BorderPane {
     private ComboBox<StatutPaiement> champStatut;
     private DatePicker champDate;
     private TextField champMontantRestant;
+    private Button btnEnregistrer, btnMettreAJourStatut, btnDetails, btnRetour;
     private Paiement paiementSelectionne;
 
-    public MenuPaiement(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-
+    public MenuPaiement() {
         // -- construction de l'interface --
         table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
@@ -56,7 +53,7 @@ public class MenuPaiement extends BorderPane {
         VBox zoneTable = new VBox(10, champRecherche, table);
         VBox.setVgrow(table, javafx.scene.layout.Priority.ALWAYS);
 
-        champEleve = new ComboBox<>(FXCollections.observableArrayList(autoEcole.getEleves()));
+        champEleve = new ComboBox<>();
         champEleve.setPromptText("Sélectionnez un élève");
         champEleve.setConverter(new StringConverter<>() {
             @Override
@@ -92,10 +89,10 @@ public class MenuPaiement extends BorderPane {
         champMontantRestant.setPromptText("Ex : 50.00");
         champMontantRestant.setDisable(true);
 
-        Button btnEnregistrer = Util.creerBoutonMenu("Enregistrer le paiement");
-        Button btnMettreAJourStatut = Util.creerBoutonMenu("Mettre à jour le statut");
-        Button btnDetails = Util.creerBoutonMenu("Afficher les détails");
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnEnregistrer = Util.creerBoutonMenu("Enregistrer le paiement");
+        btnMettreAJourStatut = Util.creerBoutonMenu("Mettre à jour le statut");
+        btnDetails = Util.creerBoutonMenu("Afficher les détails");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
 
         Label titreFormulaire = new Label("Fiche paiement");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -125,25 +122,13 @@ public class MenuPaiement extends BorderPane {
         setCenter(zoneTable);
         setRight(formulaire);
 
-        rafraichirTable();
-
         table.getSelectionModel().selectedItemProperty().addListener((obs, ancien, nouveau) -> {
             paiementSelectionne = nouveau;
             if (nouveau != null) remplirFormulaire(nouveau);
         });
 
-        champRecherche.textProperty().addListener((obs, ancien, nouveau) -> rafraichirTable());
-
-        champEleve.valueProperty().addListener((obs, ancien, nouveau) -> mettreAJourActivites(nouveau));
-
         champStatut.valueProperty().addListener((obs, ancien, nouveau) ->
                 champMontantRestant.setDisable(nouveau != StatutPaiement.PP));
-
-        // -- gestion des événements (appelle le modèle directement) --
-        btnEnregistrer.setOnAction(e -> enregistrerPaiement());
-        btnMettreAJourStatut.setOnAction(e -> mettreAJourStatut());
-        btnDetails.setOnAction(e -> afficherDetails());
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
     }
 
     private void creerColonnes() {
@@ -221,81 +206,39 @@ public class MenuPaiement extends BorderPane {
                                    colMethode, colDate, colStatut);
     }
 
-    private void enregistrerPaiement() {
-        try {
-            if (champEleve.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez un élève.");
-            }
-            if (champActivite.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une activité.");
-            }
-            if (champMethode.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une méthode de paiement.");
-            }
-            if (champStatut.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez un statut.");
-            }
-            if (champDate.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une date.");
-            }
-
-            Paiement paiement = new Paiement(autoEcole.prochainNumeroPaiement(), champDate.getValue(),
-                    champStatut.getValue(), champActivite.getValue(), champMethode.getValue(), champEleve.getValue());
-            autoEcole.ajouterPaiement(paiement);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (IllegalArgumentException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setOnEnregistrer(Runnable action) { btnEnregistrer.setOnAction(e -> action.run()); }
+    public void setOnMettreAJourStatut(Runnable action) { btnMettreAJourStatut.setOnAction(e -> action.run()); }
+    public void setOnDetails(Runnable action) { btnDetails.setOnAction(e -> action.run()); }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
+    public void setOnRecherche(Consumer<String> action) {
+        champRecherche.textProperty().addListener((obs, ancien, nouveau) -> action.accept(nouveau));
+    }
+    public void setOnEleveChoisi(Consumer<Eleve> action) {
+        champEleve.valueProperty().addListener((obs, ancien, nouveau) -> action.accept(nouveau));
     }
 
-    private void mettreAJourStatut() {
-        if (paiementSelectionne == null) {
-            new Alert(Alert.AlertType.WARNING, "Sélectionnez un paiement dans la liste.").showAndWait();
-            return;
-        }
-
-        try {
-            double montantRestant = 0;
-            if (champStatut.getValue() == StatutPaiement.PP) {
-                if (champMontantRestant.getText().isBlank()) {
-                    throw new IllegalArgumentException("Le montant restant est obligatoire pour un paiement partiel.");
-                }
-                montantRestant = Double.parseDouble(champMontantRestant.getText().trim());
-            }
-
-            autoEcole.changerEtatPaiement(paiementSelectionne.getId(), champStatut.getValue(), montantRestant);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "Le montant restant doit être un nombre valide.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- mise à jour de l'affichage (le contrôleur les appelle) ----
+    public void setListeEleves(List<Eleve> eleves) {
+        champEleve.setItems(FXCollections.observableArrayList(eleves));
     }
 
-    private void afficherDetails() {
-        if (paiementSelectionne == null) {
-            new Alert(Alert.AlertType.WARNING, "Sélectionnez un paiement dans la liste.").showAndWait();
-            return;
-        }
+    public void setActivitesDisponibles(List<Activite> activites) {
+        champActivite.setItems(FXCollections.observableArrayList(activites));
+    }
 
-        Paiement p = paiementSelectionne;
-        String details = "Élève : " + p.getEleve().getPrenom() + " " + p.getEleve().getNom()
-                + " (NumSAAQ " + p.getEleve().getNumSAAQ() + ")\n"
-                + "Activité : " + p.getTypeActivite().getLibelle() + " du " + p.getActivite().getPlageHoraire().getDate() + "\n"
-                + "Montant : " + String.format("%.2f $", p.getMontant()) + "\n"
-                + "Montant restant : " + String.format("%.2f $", p.getMontantRestant()) + "\n"
-                + "Méthode de paiement : " + p.getMethodePaiement().getLibelle() + "\n"
-                + "Date : " + p.getDate() + "\n"
-                + "Statut : " + p.getStatutPaiement().getLibelle();
+    public void afficherPaiements(List<Paiement> paiements) {
+        table.setItems(FXCollections.observableArrayList(paiements));
+        table.refresh();
+    }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, details);
-        alert.setHeaderText("Détails du paiement " + p.getId());
+    public void afficherDetails(String entete, String texte) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, texte);
+        alert.setHeaderText(entete);
         alert.showAndWait();
     }
 
-    private void remplirFormulaire(Paiement paiement) {
+    public void remplirFormulaire(Paiement paiement) {
         champEleve.setValue(paiement.getEleve());
         champEleve.setDisable(true);
         champActivite.setValue(paiement.getActivite());
@@ -308,7 +251,7 @@ public class MenuPaiement extends BorderPane {
         champMontantRestant.setText(String.valueOf(paiement.getMontantRestant()));
     }
 
-    private void viderFormulaire() {
+    public void viderFormulaire() {
         paiementSelectionne = null;
         table.getSelectionModel().clearSelection();
         champEleve.setValue(null);
@@ -323,28 +266,21 @@ public class MenuPaiement extends BorderPane {
         champMontantRestant.clear();
     }
 
-    private void mettreAJourActivites(Eleve eleve) {
-        champActivite.setItems(FXCollections.observableArrayList(
-                eleve == null ? new ArrayList<>() : autoEcole.getActivitesEleve(eleve)));
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 
-    private ArrayList<Paiement> filtrerPaiements() {
-        String texte = champRecherche.getText() == null ? "" : champRecherche.getText().trim().toLowerCase();
-        ArrayList<Paiement> resultat = new ArrayList<>();
-        for (Paiement paiement : autoEcole.getPaiements()) {
-            Eleve eleve = paiement.getEleve();
-            if (texte.isEmpty()
-                    || String.valueOf(eleve.getNumSAAQ()).contains(texte)
-                    || eleve.getNom().toLowerCase().contains(texte)
-                    || eleve.getPrenom().toLowerCase().contains(texte)) {
-                resultat.add(paiement);
-            }
-        }
-        return resultat;
+    public void afficherAvertissement(String message) {
+        new Alert(Alert.AlertType.WARNING, message).showAndWait();
     }
 
-    private void rafraichirTable() {
-        table.setItems(FXCollections.observableArrayList(filtrerPaiements()));
-    }
-
+    // ---- lecture de la saisie brute (le contrôleur les lit) ----
+    public String getTexteRecherche() { return champRecherche.getText(); }
+    public Eleve getEleveChoisi() { return champEleve.getValue(); }
+    public Activite getActiviteChoisie() { return champActivite.getValue(); }
+    public MethodePaiement getMethodeChoisie() { return champMethode.getValue(); }
+    public StatutPaiement getStatutChoisi() { return champStatut.getValue(); }
+    public LocalDate getDateChoisie() { return champDate.getValue(); }
+    public String getTexteMontantRestant() { return champMontantRestant.getText(); }
+    public Paiement getPaiementSelectionne() { return paiementSelectionne; }
 }

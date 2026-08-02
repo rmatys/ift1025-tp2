@@ -1,12 +1,9 @@
 package Vue;
 
-import Modele.AutoEcole;
 import Modele.AutreDepense;
 import Modele.DepenseVoiture;
-import Modele.OperationInvalideException;
 import Modele.TypeAutreDepense;
 import Modele.TypeDepenseVoiture;
-import Modele.Voiture;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,13 +25,15 @@ import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import Autre.Util;
 
 public class MenuDepense extends BorderPane {
-    private static final String TOUTES_CATEGORIES = "Toutes les catégories";
+    public static final String TOUTES_CATEGORIES = "Toutes les catégories";
 
-    private final AutoEcole autoEcole;
+    private Button btnRetour;
 
     // -- onglet "Dépenses véhicule" --
     private TableView<DepenseVoiture> tableDepensesVoiture;
@@ -43,6 +42,7 @@ public class MenuDepense extends BorderPane {
     private ComboBox<TypeDepenseVoiture> champCategorieVoiture;
     private TextField champDescriptionVoiture, champMontantVoiture;
     private ComboBox<String> champFiltreVoiture;
+    private Button btnAjouterVoiture;
 
     // -- onglet "Autres dépenses" --
     private TableView<AutreDepense> tableAutresDepenses;
@@ -50,10 +50,9 @@ public class MenuDepense extends BorderPane {
     private ComboBox<TypeAutreDepense> champCategorieAutre;
     private TextField champDescriptionAutre, champMontantAutre;
     private ComboBox<String> champFiltreAutre;
+    private Button btnAjouterAutre;
 
-    public MenuDepense(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-
+    public MenuDepense() {
         // -- construction de l'interface --
         TabPane onglets = new TabPane();
         onglets.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
@@ -61,7 +60,7 @@ public class MenuDepense extends BorderPane {
                 new Tab("Dépenses véhicule", creerOngletDepenseVoiture()),
                 new Tab("Autres dépenses", creerOngletAutreDepense()));
 
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
         VBox pied = new VBox(btnRetour);
         pied.setAlignment(Pos.CENTER);
         pied.setPadding(new Insets(15));
@@ -69,12 +68,6 @@ public class MenuDepense extends BorderPane {
         setStyle("-fx-background-color: #f4f6f8;");
         setCenter(onglets);
         setBottom(pied);
-
-        rafraichirTableDepensesVoiture();
-        rafraichirTableAutresDepenses();
-
-        // -- gestion des événements (appelle le modèle directement) --
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
     }
 
     // ------------------------------------------------------------------
@@ -89,9 +82,7 @@ public class MenuDepense extends BorderPane {
         tableDepensesVoiture.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         creerColonnesDepensesVoiture();
 
-        ArrayList<String> plaques = new ArrayList<>();
-        for (Voiture voiture : autoEcole.getVoitures()) plaques.add(voiture.getPlaque());
-        champPlaque = new ComboBox<>(FXCollections.observableArrayList(plaques));
+        champPlaque = new ComboBox<>();
         champPlaque.setPromptText("Sélectionnez un véhicule");
 
         champDateVoiture = new DatePicker(LocalDate.now());
@@ -103,7 +94,7 @@ public class MenuDepense extends BorderPane {
         champMontantVoiture = new TextField();
         champMontantVoiture.setPromptText("Ex : 150.00");
 
-        Button btnAjouterVoiture = Util.creerBoutonMenu("Ajouter la dépense");
+        btnAjouterVoiture = Util.creerBoutonMenu("Ajouter la dépense");
 
         Label titreFormulaire = new Label("Dépense liée à un véhicule");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -133,9 +124,6 @@ public class MenuDepense extends BorderPane {
 
         onglet.setCenter(tableDepensesVoiture);
         onglet.setRight(formulaire);
-
-        btnAjouterVoiture.setOnAction(e -> ajouterDepenseVoiture());
-        champFiltreVoiture.valueProperty().addListener((obs, ancienne, nouvelle) -> rafraichirTableDepensesVoiture());
 
         return onglet;
     }
@@ -176,58 +164,6 @@ public class MenuDepense extends BorderPane {
         tableDepensesVoiture.getColumns().addAll(colId, colPlaque, colDate, colCategorie, colDescription, colMontant);
     }
 
-    private void ajouterDepenseVoiture() {
-        try {
-            if (champPlaque.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez un véhicule.");
-            }
-            if (champDateVoiture.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une date.");
-            }
-            if (champCategorieVoiture.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une catégorie.");
-            }
-            if (champDescriptionVoiture.getText().isBlank() || champMontantVoiture.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
-
-            double montant = Double.parseDouble(champMontantVoiture.getText().trim());
-
-            autoEcole.creerDepenseVoiture(champPlaque.getValue(), champDateVoiture.getValue(),
-                                           champCategorieVoiture.getValue(), champDescriptionVoiture.getText(), montant);
-            rafraichirTableDepensesVoiture();
-            viderFormulaireVoiture();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "Le montant doit être un nombre valide.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
-    }
-
-    private void viderFormulaireVoiture() {
-        champPlaque.setValue(null);
-        champDateVoiture.setValue(LocalDate.now());
-        champCategorieVoiture.setValue(null);
-        champDescriptionVoiture.clear();
-        champMontantVoiture.clear();
-    }
-
-    private void rafraichirTableDepensesVoiture() {
-        String filtre = champFiltreVoiture == null ? null : champFiltreVoiture.getValue();
-        ArrayList<DepenseVoiture> toutes = autoEcole.getDepensesVoiture();
-
-        if (filtre == null || filtre.equals(TOUTES_CATEGORIES)) {
-            tableDepensesVoiture.setItems(FXCollections.observableArrayList(toutes));
-            return;
-        }
-
-        ArrayList<DepenseVoiture> filtrees = new ArrayList<>();
-        for (DepenseVoiture depense : toutes) {
-            if (depense.getCategorie().getLibelle().equals(filtre)) filtrees.add(depense);
-        }
-        tableDepensesVoiture.setItems(FXCollections.observableArrayList(filtrees));
-    }
-
     // ------------------------------------------------------------------
     // Onglet "Autres dépenses"
     // ------------------------------------------------------------------
@@ -249,7 +185,7 @@ public class MenuDepense extends BorderPane {
         champMontantAutre = new TextField();
         champMontantAutre.setPromptText("Ex : 200.00");
 
-        Button btnAjouterAutre = Util.creerBoutonMenu("Ajouter la dépense");
+        btnAjouterAutre = Util.creerBoutonMenu("Ajouter la dépense");
 
         Label titreFormulaire = new Label("Autre dépense");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -280,9 +216,6 @@ public class MenuDepense extends BorderPane {
 
         onglet.setCenter(tableAutresDepenses);
         onglet.setRight(formulaire);
-
-        btnAjouterAutre.setOnAction(e -> ajouterAutreDepense());
-        champFiltreAutre.valueProperty().addListener((obs, ancienne, nouvelle) -> rafraichirTableAutresDepenses());
 
         return onglet;
     }
@@ -320,51 +253,60 @@ public class MenuDepense extends BorderPane {
         tableAutresDepenses.getColumns().addAll(colId, colDate, colCategorie, colDescription, colMontant);
     }
 
-    private void ajouterAutreDepense() {
-        try {
-            if (champDateAutre.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une date.");
-            }
-            if (champCategorieAutre.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une catégorie.");
-            }
-            if (champDescriptionAutre.getText().isBlank() || champMontantAutre.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setOnAjouterDepenseVoiture(Runnable action) { btnAjouterVoiture.setOnAction(e -> action.run()); }
+    public void setOnAjouterAutreDepense(Runnable action) { btnAjouterAutre.setOnAction(e -> action.run()); }
+    public void setOnFiltreVoitureChange(Consumer<String> action) {
+        champFiltreVoiture.valueProperty().addListener((obs, ancienne, nouvelle) -> action.accept(nouvelle));
+    }
+    public void setOnFiltreAutreChange(Consumer<String> action) {
+        champFiltreAutre.valueProperty().addListener((obs, ancienne, nouvelle) -> action.accept(nouvelle));
+    }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
 
-            double montant = Double.parseDouble(champMontantAutre.getText().trim());
-
-            autoEcole.creerAutreDepense(champDateAutre.getValue(), champCategorieAutre.getValue(),
-                                         champDescriptionAutre.getText(), montant);
-            rafraichirTableAutresDepenses();
-            viderFormulaireAutre();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "Le montant doit être un nombre valide.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- mise à jour de l'affichage (le contrôleur les appelle) ----
+    public void setListeVehicules(List<String> plaques) {
+        champPlaque.setItems(FXCollections.observableArrayList(plaques));
     }
 
-    private void viderFormulaireAutre() {
+    public void afficherDepensesVoiture(List<DepenseVoiture> depenses) {
+        tableDepensesVoiture.setItems(FXCollections.observableArrayList(depenses));
+    }
+
+    public void afficherAutresDepenses(List<AutreDepense> depenses) {
+        tableAutresDepenses.setItems(FXCollections.observableArrayList(depenses));
+    }
+
+    public void viderFormulaireVoiture() {
+        champPlaque.setValue(null);
+        champDateVoiture.setValue(LocalDate.now());
+        champCategorieVoiture.setValue(null);
+        champDescriptionVoiture.clear();
+        champMontantVoiture.clear();
+    }
+
+    public void viderFormulaireAutre() {
         champDateAutre.setValue(LocalDate.now());
         champCategorieAutre.setValue(null);
         champDescriptionAutre.clear();
         champMontantAutre.clear();
     }
 
-    private void rafraichirTableAutresDepenses() {
-        String filtre = champFiltreAutre == null ? null : champFiltreAutre.getValue();
-        ArrayList<AutreDepense> toutes = autoEcole.getAutresDepenses();
-
-        if (filtre == null || filtre.equals(TOUTES_CATEGORIES)) {
-            tableAutresDepenses.setItems(FXCollections.observableArrayList(toutes));
-            return;
-        }
-
-        ArrayList<AutreDepense> filtrees = new ArrayList<>();
-        for (AutreDepense depense : toutes) {
-            if (depense.getCategorie().getLibelle().equals(filtre)) filtrees.add(depense);
-        }
-        tableAutresDepenses.setItems(FXCollections.observableArrayList(filtrees));
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
+
+    // ---- lecture de la saisie brute (le contrôleur les lit) ----
+    public String getVehiculeChoisi() { return champPlaque.getValue(); }
+    public LocalDate getDateVoiture() { return champDateVoiture.getValue(); }
+    public TypeDepenseVoiture getCategorieVoitureChoisie() { return champCategorieVoiture.getValue(); }
+    public String getTexteDescriptionVoiture() { return champDescriptionVoiture.getText(); }
+    public String getTexteMontantVoiture() { return champMontantVoiture.getText(); }
+    public String getFiltreVoiture() { return champFiltreVoiture.getValue(); }
+
+    public LocalDate getDateAutre() { return champDateAutre.getValue(); }
+    public TypeAutreDepense getCategorieAutreChoisie() { return champCategorieAutre.getValue(); }
+    public String getTexteDescriptionAutre() { return champDescriptionAutre.getText(); }
+    public String getTexteMontantAutre() { return champMontantAutre.getText(); }
+    public String getFiltreAutre() { return champFiltreAutre.getValue(); }
 }

@@ -1,13 +1,9 @@
 package Vue;
 
 import Modele.Activite;
-import Modele.AutoEcole;
 import Modele.Eleve;
-import Modele.OperationInvalideException;
-import Modele.PlageHoraire;
 import Modele.StatutActivite;
 import Modele.TypeActivite;
-import Modele.Voiture;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -28,16 +24,14 @@ import javafx.util.StringConverter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import Autre.Util;
 
 public class MenuActivite extends BorderPane {
-    private static final String AUCUN_VEHICULE = "Aucun véhicule";
+    public static final String AUCUN_VEHICULE = "Aucun véhicule";
 
-    private final AutoEcole autoEcole;
     private TableView<Activite> table;
     private ComboBox<Eleve> champEleve;
     private ComboBox<TypeActivite> champType;
@@ -45,17 +39,16 @@ public class MenuActivite extends BorderPane {
     private TextField champHeure, champDuree;
     private ComboBox<String> champVehicule;
     private ComboBox<StatutActivite> champStatut;
+    private Button btnPlanifier, btnMettreAJourStatut, btnDetails, btnAnnuler, btnRetour;
     private Activite activiteSelectionnee;
 
-    public MenuActivite(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-
+    public MenuActivite() {
         // -- construction de l'interface --
         table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         creerColonnes();
 
-        champEleve = new ComboBox<>(FXCollections.observableArrayList(autoEcole.getEleves()));
+        champEleve = new ComboBox<>();
         champEleve.setPromptText("Sélectionnez un élève");
         champEleve.setConverter(new StringConverter<>() {
             @Override
@@ -78,20 +71,17 @@ public class MenuActivite extends BorderPane {
         champDuree = new TextField();
         champDuree.setPromptText("Ex : 60");
 
-        ArrayList<String> vehicules = new ArrayList<>();
-        vehicules.add(AUCUN_VEHICULE);
-        for (Voiture voiture : autoEcole.getVoitures()) vehicules.add(voiture.getPlaque());
-        champVehicule = new ComboBox<>(FXCollections.observableArrayList(vehicules));
+        champVehicule = new ComboBox<>();
         champVehicule.setValue(AUCUN_VEHICULE);
 
         champStatut = new ComboBox<>(FXCollections.observableArrayList(StatutActivite.values()));
         champStatut.setValue(StatutActivite.NC);
 
-        Button btnPlanifier = Util.creerBoutonMenu("Planifier");
-        Button btnMettreAJourStatut = Util.creerBoutonMenu("Mettre à jour le statut");
-        Button btnDetails = Util.creerBoutonMenu("Afficher les détails");
-        Button btnAnnuler = Util.creerBoutonMenu("Annuler l'activité");
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnPlanifier = Util.creerBoutonMenu("Planifier");
+        btnMettreAJourStatut = Util.creerBoutonMenu("Mettre à jour le statut");
+        btnDetails = Util.creerBoutonMenu("Afficher les détails");
+        btnAnnuler = Util.creerBoutonMenu("Annuler l'activité");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
 
         Label titreFormulaire = new Label("Fiche activité");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -123,19 +113,10 @@ public class MenuActivite extends BorderPane {
         setCenter(table);
         setRight(formulaire);
 
-        rafraichirTable();
-
         table.getSelectionModel().selectedItemProperty().addListener((obs, ancienne, nouvelle) -> {
             activiteSelectionnee = nouvelle;
             if (nouvelle != null) remplirFormulaire(nouvelle);
         });
-
-        // -- gestion des événements (appelle le modèle directement) --
-        btnPlanifier.setOnAction(e -> planifierActivite());
-        btnMettreAJourStatut.setOnAction(e -> mettreAJourStatut());
-        btnDetails.setOnAction(e -> afficherDetails());
-        btnAnnuler.setOnAction(e -> annulerActivite());
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
     }
 
     private void creerColonnes() {
@@ -208,95 +189,38 @@ public class MenuActivite extends BorderPane {
                                    colDuree, colVehicule, colStatut, colMontant);
     }
 
-    private void planifierActivite() {
-        try {
-            if (champEleve.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez un élève.");
-            }
-            if (champType.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez un type d'activité.");
-            }
-            if (champDate.getValue() == null) {
-                throw new IllegalArgumentException("Sélectionnez une date.");
-            }
-            if (champHeure.getText().isBlank() || champDuree.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setOnPlanifier(Runnable action) { btnPlanifier.setOnAction(e -> action.run()); }
+    public void setOnMettreAJourStatut(Runnable action) { btnMettreAJourStatut.setOnAction(e -> action.run()); }
+    public void setOnDetails(Runnable action) { btnDetails.setOnAction(e -> action.run()); }
+    public void setOnAnnuler(Runnable action) { btnAnnuler.setOnAction(e -> action.run()); }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
 
-            LocalTime heureDebut;
-            try {
-                heureDebut = LocalTime.parse(champHeure.getText().trim(), DateTimeFormatter.ofPattern("H:mm"));
-            } catch (DateTimeParseException ex) {
-                throw new IllegalArgumentException("L'heure doit être au format H:mm (ex : 14:30).");
-            }
-
-            int duree = Integer.parseInt(champDuree.getText().trim());
-            String plaque = champVehicule.getValue() == null || champVehicule.getValue().equals(AUCUN_VEHICULE)
-                    ? "" : champVehicule.getValue();
-
-            PlageHoraire horaire = new PlageHoraire(champDate.getValue(), heureDebut, duree);
-            autoEcole.creerActivite(horaire, champEleve.getValue().getNumSAAQ(), plaque,
-                                     champType.getValue(), StatutActivite.NC);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "La durée doit être un nombre valide.").showAndWait();
-        } catch (IllegalArgumentException | OperationInvalideException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- mise à jour de l'affichage (le contrôleur les appelle) ----
+    public void setListeEleves(List<Eleve> eleves) {
+        champEleve.setItems(FXCollections.observableArrayList(eleves));
     }
 
-    private void mettreAJourStatut() {
-        if (activiteSelectionnee == null) {
-            new Alert(Alert.AlertType.WARNING, "Sélectionnez une activité dans la liste.").showAndWait();
-            return;
-        }
-
-        StatutActivite nouveauStatut = champStatut.getValue();
-        if (nouveauStatut == StatutActivite.C) {
-            autoEcole.completerActivite(activiteSelectionnee.getId());
-        } else {
-            activiteSelectionnee.setStatut(nouveauStatut);
-            autoEcole.sauvegarderActivites();
-        }
-        rafraichirTable();
-        viderFormulaire();
+    public void setListeVehicules(List<String> plaques) {
+        ArrayList<String> valeurs = new ArrayList<>();
+        valeurs.add(AUCUN_VEHICULE);
+        valeurs.addAll(plaques);
+        champVehicule.setItems(FXCollections.observableArrayList(valeurs));
+        champVehicule.setValue(AUCUN_VEHICULE);
     }
 
-    private void annulerActivite() {
-        if (activiteSelectionnee == null) {
-            new Alert(Alert.AlertType.WARNING, "Sélectionnez une activité dans la liste.").showAndWait();
-            return;
-        }
-
-        autoEcole.annulerActivite(activiteSelectionnee.getId());
-        rafraichirTable();
-        viderFormulaire();
+    public void afficherActivites(List<Activite> activites) {
+        table.setItems(FXCollections.observableArrayList(activites));
+        table.refresh();
     }
 
-    private void afficherDetails() {
-        if (activiteSelectionnee == null) {
-            new Alert(Alert.AlertType.WARNING, "Sélectionnez une activité dans la liste.").showAndWait();
-            return;
-        }
-
-        Activite a = activiteSelectionnee;
-        String details = "Élève : " + a.getEleve().getPrenom() + " " + a.getEleve().getNom()
-                + " (NumSAAQ " + a.getEleve().getNumSAAQ() + ")\n"
-                + "Type : " + a.getType().getLibelle() + "\n"
-                + "Date : " + a.getPlageHoraire().getDate() + "\n"
-                + "Heure : " + a.getPlageHoraire().getHeureDebut() + " - " + a.getPlageHoraire().getHeureFin() + "\n"
-                + "Durée : " + a.getPlageHoraire().getDuree() + " minutes\n"
-                + "Véhicule : " + (a.getPlaque().isBlank() ? AUCUN_VEHICULE : a.getPlaque()) + "\n"
-                + "Statut : " + a.getStatut().getLibelle() + "\n"
-                + "Montant : " + String.format("%.2f $", a.getMontant());
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, details);
-        alert.setHeaderText("Détails de l'activité #" + a.getId());
+    public void afficherDetails(String entete, String texte) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, texte);
+        alert.setHeaderText(entete);
         alert.showAndWait();
     }
 
-    private void remplirFormulaire(Activite activite) {
+    public void remplirFormulaire(Activite activite) {
         champEleve.setValue(activite.getEleve());
         champType.setValue(activite.getType());
         champDate.setValue(activite.getPlageHoraire().getDate());
@@ -306,7 +230,7 @@ public class MenuActivite extends BorderPane {
         champStatut.setValue(activite.getStatut());
     }
 
-    private void viderFormulaire() {
+    public void viderFormulaire() {
         activiteSelectionnee = null;
         table.getSelectionModel().clearSelection();
         champEleve.setValue(null);
@@ -318,8 +242,21 @@ public class MenuActivite extends BorderPane {
         champStatut.setValue(StatutActivite.NC);
     }
 
-    private void rafraichirTable() {
-        table.setItems(FXCollections.observableArrayList(autoEcole.getActivites()));
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 
+    public void afficherAvertissement(String message) {
+        new Alert(Alert.AlertType.WARNING, message).showAndWait();
+    }
+
+    // ---- lecture de la saisie brute (le contrôleur les lit) ----
+    public Eleve getEleveChoisi() { return champEleve.getValue(); }
+    public TypeActivite getTypeChoisi() { return champType.getValue(); }
+    public LocalDate getDateChoisie() { return champDate.getValue(); }
+    public String getTexteHeure() { return champHeure.getText(); }
+    public String getTexteDuree() { return champDuree.getText(); }
+    public String getVehiculeChoisi() { return champVehicule.getValue(); }
+    public StatutActivite getStatutChoisi() { return champStatut.getValue(); }
+    public Activite getActiviteSelectionnee() { return activiteSelectionnee; }
 }

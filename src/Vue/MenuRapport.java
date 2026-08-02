@@ -1,8 +1,5 @@
 package Vue;
 
-import Modele.AutoEcole;
-import Modele.CSV;
-import Modele.Rapports;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -15,24 +12,18 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 import Autre.Util;
 
 public class MenuRapport extends BorderPane {
-    private final AutoEcole autoEcole;
+    private VBox menu;
+    private Button btnTous, btnRetour;
+    private Runnable actionGenererTous;
+    private Consumer<String> actionGenererUnique;
 
-    private record RapportInfo(String libelle, String nomFichier, BooleanSupplier generation) {}
-
-    public MenuRapport(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-        List<RapportInfo> rapports = listeRapports();
-
+    public MenuRapport() {
         // -- construction de l'interface --
         Label titre = new Label("Rapports");
         titre.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -40,16 +31,11 @@ public class MenuRapport extends BorderPane {
         Label sousTitre = new Label("Sélectionnez le rapport à générer");
         sousTitre.setStyle("-fx-font-size: 13px; -fx-text-fill: #7f8c8d;");
 
-        Button btnTous = Util.creerBoutonMenu("Générer tous les rapports");
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnTous = Util.creerBoutonMenu("Générer tous les rapports");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
 
-        VBox menu = new VBox(12, titre, sousTitre, new Separator(), btnTous, new Separator());
-        for (RapportInfo rapport : rapports) {
-            Button bouton = Util.creerBoutonMenu(rapport.libelle());
-            bouton.setOnAction(e -> genererRapportUnique(rapport));
-            menu.getChildren().add(bouton);
-        }
-        menu.getChildren().addAll(new Separator(), btnRetour);
+        menu = new VBox(12, titre, sousTitre, new Separator(), btnTous, new Separator());
+        menu.getChildren().add(btnRetour);
 
         menu.setAlignment(Pos.TOP_CENTER);
         menu.setPadding(new Insets(30));
@@ -61,82 +47,45 @@ public class MenuRapport extends BorderPane {
         setStyle("-fx-background-color: #f4f6f8;");
         setCenter(menu);
 
-        // -- gestion des événements (appelle le modèle directement) --
-        btnTous.setOnAction(e -> genererTousLesRapports(rapports));
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
+        btnTous.setOnAction(e -> { if (actionGenererTous != null) actionGenererTous.run(); });
     }
 
-    private List<RapportInfo> listeRapports() {
-        return List.of(
-                new RapportInfo("Rapport des élèves", "rapportEleves" + CSV.YEAR + ".txt",
-                        () -> Rapports.genererRapportEleves(autoEcole.getEleves())),
-                new RapportInfo("Rapport des revenus", "rapportRevenus" + CSV.YEAR + ".txt",
-                        () -> Rapports.genererRapportRevenus(autoEcole.getActivites(), autoEcole.getPaiements())),
-                new RapportInfo("Rapport des dépenses véhicule", "rapportDepensesVoiture" + CSV.YEAR + ".txt",
-                        () -> Rapports.genererRapportDepensesVoiture(autoEcole.getDepensesVoiture())),
-                new RapportInfo("Rapport des autres dépenses", "rapportAutresDepenses" + CSV.YEAR + ".txt",
-                        () -> Rapports.genererRapportAutresDepenses(autoEcole.getAutresDepenses()))
-        );
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setLibellesRapports(List<String> libelles) {
+        int indexInsertion = menu.getChildren().indexOf(btnTous) + 1;
+        for (String libelle : libelles) {
+            Button bouton = Util.creerBoutonMenu(libelle);
+            bouton.setOnAction(e -> { if (actionGenererUnique != null) actionGenererUnique.accept(libelle); });
+            menu.getChildren().add(indexInsertion, bouton);
+            indexInsertion++;
+        }
     }
 
-    /**
-     * Génère les 4 rapports d'un coup et les enregistre dans un unique répertoire
-     * choisi par l'utilisateur à l'aide d'un DirectoryChooser.
-     */
-    private void genererTousLesRapports(List<RapportInfo> rapports) {
+    public void setOnGenererTous(Runnable action) { this.actionGenererTous = action; }
+    public void setOnGenererUnique(Consumer<String> action) { this.actionGenererUnique = action; }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
+
+    // ---- dialogues JavaFX (préoccupation UI, appelés par le contrôleur) ----
+    public File choisirDossierDestination() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Choisir le répertoire de destination");
-        File dossier = directoryChooser.showDialog(getScene().getWindow());
-        if (dossier == null) return;
-
-        List<String> echecs = new ArrayList<>();
-        for (RapportInfo rapport : rapports) {
-            if (!rapport.generation().getAsBoolean()) {
-                echecs.add(rapport.libelle());
-                continue;
-            }
-
-            try {
-                File source = new File(CSV.getDir("rapport"), rapport.nomFichier());
-                File destination = new File(dossier, rapport.nomFichier());
-                Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException ex) {
-                echecs.add(rapport.libelle());
-            }
-        }
-
-        if (echecs.isEmpty()) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    "Les 4 rapports ont été enregistrés dans : " + dossier.getAbsolutePath()).showAndWait();
-        } else {
-            new Alert(Alert.AlertType.ERROR,
-                    "Échec de la génération pour : " + String.join(", ", echecs)).showAndWait();
-        }
+        return directoryChooser.showDialog(getScene().getWindow());
     }
 
-    /**
-     * Génère un rapport via le modèle, puis laisse l'utilisateur choisir où enregistrer
-     * le fichier texte produit à l'aide d'un FileChooser.
-     */
-    private void genererRapportUnique(RapportInfo rapport) {
-        if (!rapport.generation().getAsBoolean()) {
-            new Alert(Alert.AlertType.ERROR, "La génération du rapport a échoué.").showAndWait();
-            return;
-        }
-
+    public File choisirFichierDestination(String nomParDefaut) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Enregistrer le rapport");
-        fileChooser.setInitialFileName(rapport.nomFichier());
+        fileChooser.setInitialFileName(nomParDefaut);
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier texte", "*.txt"));
-        File destination = fileChooser.showSaveDialog(getScene().getWindow());
-        if (destination == null) return;
+        return fileChooser.showSaveDialog(getScene().getWindow());
+    }
 
-        try {
-            File source = new File(CSV.getDir("rapport"), rapport.nomFichier());
-            Files.copy(source.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            new Alert(Alert.AlertType.INFORMATION, "Rapport enregistré : " + destination.getAbsolutePath()).showAndWait();
-        } catch (IOException ex) {
-            new Alert(Alert.AlertType.ERROR, "Impossible d'enregistrer le rapport à l'emplacement choisi.").showAndWait();
-        }
+    // ---- affichage de messages ----
+    public void afficherInformation(String message) {
+        new Alert(Alert.AlertType.INFORMATION, message).showAndWait();
+    }
+
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 }

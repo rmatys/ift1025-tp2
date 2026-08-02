@@ -1,6 +1,5 @@
 package Vue;
 
-import Modele.AutoEcole;
 import Modele.Eleve;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -17,20 +16,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import Autre.Util;
 
 public class MenuEleve extends BorderPane {
-    private final AutoEcole autoEcole;
     private TableView<Eleve> table;
     private TextField champRecherche;
     private TextField champNumSAAQ, champNom, champPrenom, champAdresse, champTelephone;
+    private Button btnAjouter, btnModifier, btnSupprimer, btnRetour;
     private Eleve eleveSelectionne;
 
-    public MenuEleve(AutoEcole autoEcole, BorderPane conteneur) {
-        this.autoEcole = autoEcole;
-
+    public MenuEleve() {
         // -- construction de l'interface --
         table = new TableView<>();
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
@@ -54,10 +52,10 @@ public class MenuEleve extends BorderPane {
         champAdresse.setPromptText("Adresse complète");
         champTelephone.setPromptText("Ex : 514-555-1234");
 
-        Button btnAjouter = Util.creerBoutonMenu("Ajouter");
-        Button btnModifier = Util.creerBoutonMenu("Modifier");
-        Button btnSupprimer = Util.creerBoutonMenu("Supprimer");
-        Button btnRetour = Util.creerBoutonMenu("Retour au menu principal");
+        btnAjouter = Util.creerBoutonMenu("Ajouter");
+        btnModifier = Util.creerBoutonMenu("Modifier");
+        btnSupprimer = Util.creerBoutonMenu("Supprimer");
+        btnRetour = Util.creerBoutonMenu("Retour au menu principal");
 
         Label titreFormulaire = new Label("Fiche élève");
         titreFormulaire.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
@@ -83,20 +81,10 @@ public class MenuEleve extends BorderPane {
         setCenter(zoneTable);
         setRight(formulaire);
 
-        rafraichirTable();
-
         table.getSelectionModel().selectedItemProperty().addListener((obs, ancien, nouvel) -> {
             eleveSelectionne = nouvel;
             if (nouvel != null) remplirFormulaire(nouvel);
         });
-
-        champRecherche.textProperty().addListener((obs, ancien, nouveau) -> rafraichirTable());
-
-        // -- gestion des événements (appelle le modèle directement) --
-        btnAjouter.setOnAction(e -> ajouterEleve());
-        btnModifier.setOnAction(e -> modifierEleve());
-        btnSupprimer.setOnAction(e -> supprimerEleve());
-        btnRetour.setOnAction(e -> conteneur.setCenter(new MenuPrincipal(autoEcole, conteneur)));
     }
 
     private void creerColonnes() {
@@ -131,57 +119,22 @@ public class MenuEleve extends BorderPane {
         table.getColumns().addAll(colNumSAAQ, colNom, colPrenom, colAdresse, colTelephone, colDateDebut, colDateFin);
     }
 
-    private void ajouterEleve() {
-        try {
-            if (champNumSAAQ.getText().isBlank() || champNom.getText().isBlank()
-                    || champPrenom.getText().isBlank() || champAdresse.getText().isBlank()
-                    || champTelephone.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
-
-            long numSAAQ = Long.parseLong(champNumSAAQ.getText().trim());
-            Eleve e = new Eleve(numSAAQ, champPrenom.getText(), champNom.getText(),
-                                 champAdresse.getText(), champTelephone.getText(), LocalDate.now());
-            autoEcole.ajouterEleve(e);
-            rafraichirTable();
-            viderFormulaire();
-        } catch (NumberFormatException ex) {
-            new Alert(Alert.AlertType.ERROR, "Le NumSAAQ doit être un nombre valide.").showAndWait();
-        } catch (IllegalArgumentException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- câblage des événements (le contrôleur s'y abonne) ----
+    public void setOnAjouter(Runnable action) { btnAjouter.setOnAction(e -> action.run()); }
+    public void setOnModifier(Runnable action) { btnModifier.setOnAction(e -> action.run()); }
+    public void setOnSupprimer(Runnable action) { btnSupprimer.setOnAction(e -> action.run()); }
+    public void setOnRetour(Runnable action) { btnRetour.setOnAction(e -> action.run()); }
+    public void setOnRecherche(Consumer<String> action) {
+        champRecherche.textProperty().addListener((obs, ancien, nouveau) -> action.accept(nouveau));
     }
 
-    private void modifierEleve() {
-        try {
-            if (eleveSelectionne == null) {
-                throw new IllegalArgumentException("Sélectionnez un élève à modifier dans la liste.");
-            }
-
-            if (champNom.getText().isBlank() || champPrenom.getText().isBlank()
-                    || champAdresse.getText().isBlank() || champTelephone.getText().isBlank()) {
-                throw new IllegalArgumentException("Tous les champs sont obligatoires.");
-            }
-
-            autoEcole.modifierEleve(eleveSelectionne.getNumSAAQ(), champPrenom.getText(),
-                                     champNom.getText(), champAdresse.getText(), champTelephone.getText());
-            rafraichirTable();
-            viderFormulaire();
-        } catch (IllegalArgumentException ex) {
-            new Alert(Alert.AlertType.ERROR, ex.getMessage()).showAndWait();
-        }
+    // ---- mise à jour de l'affichage (le contrôleur les appelle) ----
+    public void afficherEleves(List<Eleve> eleves) {
+        table.setItems(FXCollections.observableArrayList(eleves));
+        table.refresh();
     }
 
-    private void supprimerEleve() {
-        Eleve selectionne = table.getSelectionModel().getSelectedItem();
-        if (selectionne != null) {
-            autoEcole.supprimerEleve(selectionne.getNumSAAQ());
-            rafraichirTable();
-            viderFormulaire();
-        }
-    }
-
-    private void remplirFormulaire(Eleve eleve) {
+    public void remplirFormulaire(Eleve eleve) {
         champNumSAAQ.setText(String.valueOf(eleve.getNumSAAQ()));
         champNumSAAQ.setDisable(true);
         champNom.setText(eleve.getNom());
@@ -190,7 +143,7 @@ public class MenuEleve extends BorderPane {
         champTelephone.setText(eleve.getTelephone());
     }
 
-    private void viderFormulaire() {
+    public void viderFormulaire() {
         eleveSelectionne = null;
         table.getSelectionModel().clearSelection();
         champNumSAAQ.clear();
@@ -201,22 +154,16 @@ public class MenuEleve extends BorderPane {
         champTelephone.clear();
     }
 
-    private ArrayList<Eleve> filtrerEleves() {
-        String texte = champRecherche.getText() == null ? "" : champRecherche.getText().trim().toLowerCase();
-        ArrayList<Eleve> resultat = new ArrayList<>();
-        for (Eleve eleve : autoEcole.getEleves()) {
-            if (texte.isEmpty()
-                    || String.valueOf(eleve.getNumSAAQ()).contains(texte)
-                    || eleve.getNom().toLowerCase().contains(texte)
-                    || eleve.getPrenom().toLowerCase().contains(texte)) {
-                resultat.add(eleve);
-            }
-        }
-        return resultat;
+    public void afficherErreur(String message) {
+        new Alert(Alert.AlertType.ERROR, message).showAndWait();
     }
 
-    private void rafraichirTable() {
-        table.setItems(FXCollections.observableArrayList(filtrerEleves()));
-    }
-
+    // ---- lecture de la saisie brute (le contrôleur les lit) ----
+    public String getTexteRecherche() { return champRecherche.getText(); }
+    public String getTexteNumSAAQ() { return champNumSAAQ.getText(); }
+    public String getTexteNom() { return champNom.getText(); }
+    public String getTextePrenom() { return champPrenom.getText(); }
+    public String getTexteAdresse() { return champAdresse.getText(); }
+    public String getTexteTelephone() { return champTelephone.getText(); }
+    public Eleve getEleveSelectionne() { return eleveSelectionne; }
 }

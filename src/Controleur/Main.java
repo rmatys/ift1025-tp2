@@ -4,7 +4,6 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import Modele.AutoEcole;
-import Vue.MenuPrincipal;
 
 /**
  * Classe principale de l'application de gestion d'une auto-école
@@ -22,7 +21,7 @@ public class Main extends Application {
         chargerDonnees();
 
         BorderPane racine = new BorderPane();
-        racine.setCenter(new MenuPrincipal(autoEcole, racine));
+        racine.setCenter(new ControleurPrincipal(autoEcole, racine).getVue());
 
         stage.setScene(new Scene(racine, 1000, 700));
         stage.setTitle("Gestion Auto-École");

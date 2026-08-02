@@ -2,7 +2,7 @@
        AUTO-ÉCOLE - RAPPORT DES ÉLÈVES
        Année 2026
 ================================================
-Date de génération : 30-07-2026
+Date de génération : 02-08-2026
 
 ------------------------------------------------
 ÉLÈVES ACTIFS (en cours de formation)
@@ -20,8 +20,9 @@ NumSAAQ      Nom            Prénom       Inscription
 100000015    Melanie        Belanger     2026-05-24
 100000017    Genevieve      Girard       2026-02-26
 100000018    Alexandre      Simard       2026-04-25
+100000020    Serge          Menard       2026-07-30
 
-Total élèves actifs : 12
+Total élèves actifs : 13
 
 ------------------------------------------------
 ÉLÈVES AYANT COMPLÉTÉ LEUR FORMATION
@@ -39,7 +40,7 @@ Total élèves complétés : 6
 ------------------------------------------------
 RÉSUMÉ
 ------------------------------------------------
-Nombre total d'élèves (année 2026) : 18
-Élèves actifs                      : 12
+Nombre total d'élèves (année 2026) : 19
+Élèves actifs                      : 13
 Élèves ayant terminé               : 6
 ================================================
