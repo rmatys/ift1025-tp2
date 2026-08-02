@@ -4,6 +4,7 @@ out/
 !**/src/test/**/out/
 .kotlin
 .xml
+scratch_out/
 
 ### Eclipse ###
 .apt_generated

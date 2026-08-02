@@ -21,8 +21,9 @@ public class Rapports {
     /**
      * Génère un rapport des élèves
      * @param eleves la liste des élèves
+     * @param destination le fichier où enregistrer le rapport
      */
-    public static boolean genererRapportEleves(ArrayList<Eleve> eleves) {
+    public static boolean genererRapportEleves(ArrayList<Eleve> eleves, File destination) {
         int nbrElevesActif = 0;
         int nbrElevesGradue = 0;
         for (Eleve eleve : eleves) {
@@ -33,16 +34,7 @@ public class Rapports {
             }
         }
 
-        File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) {
-            boolean succes = dir.mkdirs();
-            if (!succes) {
-                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
-                return false;
-            }
-        }
-        File f = new File(dir, "rapportEleves" + CSV.YEAR + ".txt");
-        try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
             pw.println("================================================");
             pw.println("       AUTO-ÉCOLE - RAPPORT DES ÉLÈVES");
             pw.println("       Année " + CSV.YEAR);
@@ -106,19 +98,9 @@ public class Rapports {
      * Génère un rapport des revenus
      * @param activites la liste des activités
      * @param paiements la liste des paiements
+     * @param destination le fichier où enregistrer le rapport
      */
-    public static boolean genererRapportRevenus(ArrayList<Activite> activites, ArrayList<Paiement> paiements) {
-        File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) {
-            boolean succes = dir.mkdirs();
-            if (!succes) {
-                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
-                return false;
-            }
-        }
-
-        File f = new File(dir, "rapportRevenus" + CSV.YEAR + ".txt");
-
+    public static boolean genererRapportRevenus(ArrayList<Activite> activites, ArrayList<Paiement> paiements, File destination) {
         int nombreLecons = 0;
         int nombreExamens = 0;
         double revenuLecons = 0;
@@ -161,7 +143,7 @@ public class Rapports {
                     break;
             }
         }
-        try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
             pw.println("================================================");
             pw.println("       AUTO-ÉCOLE - RAPPORT DE REVENUS");
             pw.println("       Année " + CSV.YEAR);
@@ -219,19 +201,9 @@ public class Rapports {
     /**
      * Génère un rapport des dépenses voiture
      * @param depensesVoiture la liste des dépenses voiture
+     * @param destination le fichier où enregistrer le rapport
      */
-    public static boolean genererRapportDepensesVoiture(ArrayList<DepenseVoiture> depensesVoiture) {
-        File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) {
-            boolean succes = dir.mkdirs();
-            if (!succes) {
-                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
-                return false;
-            }
-        }
-
-        File f = new File(dir, "rapportDepensesVoiture" + CSV.YEAR + ".txt");
-
+    public static boolean genererRapportDepensesVoiture(ArrayList<DepenseVoiture> depensesVoiture, File destination) {
         double totalR = 0;
         double totalE = 0;
         double totalC = 0;
@@ -257,7 +229,7 @@ public class Rapports {
             }
         }
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
             pw.println("================================================");
             pw.println("       AUTO-ÉCOLE - RAPPORT DES DÉPENSES VÉHICULE");
             pw.println("       Année " + CSV.YEAR);
@@ -305,19 +277,9 @@ public class Rapports {
     /**
      * Génère un rapport des autres dépenses
      * @param autresDepenses la liste des autres dépenses
+     * @param destination le fichier où enregistrer le rapport
      */
-    public static boolean genererRapportAutresDepenses(ArrayList<AutreDepense> autresDepenses) {
-        File dir = new File(CSV.getDir("rapport"));
-        if (!dir.exists()) {
-            boolean succes = dir.mkdirs();
-            if (!succes) {
-                logger.log(Level.WARNING, "Impossible de créer un folder dans: " + dir);
-                return false;
-            }
-        }
-
-        File f = new File(dir, "rapportAutresDepenses" + CSV.YEAR + ".txt");
-
+    public static boolean genererRapportAutresDepenses(ArrayList<AutreDepense> autresDepenses, File destination) {
         double total = 0;
         Map<TypeAutreDepense, Double> totals = new HashMap<>();
         totals.put(TypeAutreDepense.P, 0.0);
@@ -326,7 +288,7 @@ public class Rapports {
         totals.put(TypeAutreDepense.I, 0.0);
         totals.put(TypeAutreDepense.A, 0.0);
 
-        try (PrintWriter pw = new PrintWriter(new FileWriter(f))) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(destination))) {
 
             pw.println("================================================");
             pw.println("       AUTO-ÉCOLE - RAPPORT DES DÉPENSES VÉHICULE");
