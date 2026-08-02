@@ -35,9 +35,9 @@ public class MenuPrincipal extends VBox {
         Button btnRapports = Util.creerBoutonMenu("Génération de rapports");
 
         btnEleves.setOnAction(e -> conteneur.setCenter(new MenuEleve(autoEcole, conteneur)));
-        // btnActivites.setOnAction(e -> conteneur.setCenter(new MenuActivite(autoEcole, conteneur)));
+        btnActivites.setOnAction(e -> conteneur.setCenter(new MenuActivite(autoEcole, conteneur)));
         btnVoitures.setOnAction(e -> conteneur.setCenter(new MenuVehicule(autoEcole, conteneur)));
-        // btnPaiements.setOnAction(e -> conteneur.setCenter(new MenuPaiement(autoEcole, conteneur)));
+        btnPaiements.setOnAction(e -> conteneur.setCenter(new MenuPaiement(autoEcole, conteneur)));
         btnDepenses.setOnAction(e -> conteneur.setCenter(new MenuDepense(autoEcole, conteneur)));
         btnRapports.setOnAction(e -> conteneur.setCenter(new MenuRapport(autoEcole, conteneur)));
 
