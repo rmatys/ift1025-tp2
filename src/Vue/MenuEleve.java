@@ -37,7 +37,7 @@ public class MenuEleve extends BorderPane {
         creerColonnes();
 
         champRecherche = new TextField();
-        champRecherche.setPromptText("Rechercher par NumSAAQ, nom ou prénom");
+        champRecherche.setPromptText("Rechercher par Numéro SAAQ, nom ou prénom");
 
         VBox zoneTable = new VBox(10, champRecherche, table);
         VBox.setVgrow(table, javafx.scene.layout.Priority.ALWAYS);
@@ -64,7 +64,7 @@ public class MenuEleve extends BorderPane {
 
         VBox formulaire = new VBox(10, titreFormulaire,
                                     new Separator(),
-                                    new Label("NumSAAQ :"), champNumSAAQ,
+                                    new Label("Numéro SAAQ :"), champNumSAAQ,
                                     new Label("Nom :"), champNom,
                                     new Label("Prénom :"), champPrenom,
                                     new Label("Adresse :"), champAdresse,
